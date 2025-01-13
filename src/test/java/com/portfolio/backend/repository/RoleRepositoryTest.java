@@ -54,7 +54,7 @@ public class RoleRepositoryTest {
 
     @Test
     void testBeforeEachSetup() {
-        // Vérifie le nombre total de rôles dans la base de données
+        // Check the amount of roles in the database to see if the annotation @BeforeEachSetup works well 
         long roleCount = roleRepository.count();
         assertEquals(2, roleCount, "The database should contain exactly 2 roles after setup");
     }
