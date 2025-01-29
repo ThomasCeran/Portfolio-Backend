@@ -24,6 +24,9 @@ class ProjectRepositoryTest {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private SkillRepository skillRepository;
+
     @BeforeEach
     void setUp() {
         // Ajouter des données de test avant chaque test
