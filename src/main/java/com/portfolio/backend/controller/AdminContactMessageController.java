@@ -3,6 +3,7 @@ package com.portfolio.backend.controller;
 import com.portfolio.backend.entity.ContactMessage;
 import com.portfolio.backend.service.ContactMessageService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -13,12 +14,13 @@ import java.util.Optional;
  * REST controller for managing contact messages.
  */
 @RestController
-@RequestMapping("/contact-messages")
-public class ContactMessageController {
+@RequestMapping("/api/admin/messages")
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminContactMessageController {
 
     private final ContactMessageService contactMessageService;
 
-    public ContactMessageController(ContactMessageService contactMessageService) {
+    public AdminContactMessageController(ContactMessageService contactMessageService) {
         this.contactMessageService = contactMessageService;
     }
 

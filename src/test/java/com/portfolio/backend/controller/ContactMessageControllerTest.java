@@ -26,7 +26,7 @@ class ContactMessageControllerTest {
     private ContactMessageService contactMessageService;
 
     @InjectMocks
-    private ContactMessageController contactMessageController;
+    private AdminContactMessageController contactMessageController;
 
     @BeforeEach
     void setUp() {

@@ -93,6 +93,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param userId the ID of the user.
      * @return a list of contact messages associated with the user.
      */
-    @Query("SELECT cm FROM ContactMessage cm WHERE cm.user.id = :userId")
-    List<Object> findContactMessagesByUserId(@Param("userId") Long userId);
+    // @Query("SELECT cm FROM ContactMessage cm WHERE cm.user.id = :userId")
+    // List<Object> findContactMessagesByUserId(@Param("userId") Long userId);
 }

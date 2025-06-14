@@ -2,6 +2,7 @@ package com.portfolio.backend.entity;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 
 /**
  * Represents a contact message sent by a user.
@@ -17,6 +18,7 @@ public class ContactMessage {
      * Email of the sender (optional, useful for unregistered users).
      */
     @Column(nullable = false)
+    @Email(message = "Invalid email format")
     private String email;
 
     /**
@@ -47,9 +49,9 @@ public class ContactMessage {
      * Reference to the user who sent the message (optional).
      * Many-to-One relationship with the `User` entity.
      */
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    // @ManyToOne
+    // @JoinColumn(name = "user_id", nullable = true)
+    // private User user;
 
     /**
      * Automatically sets the creation date before persisting the entity.
@@ -104,11 +106,11 @@ public class ContactMessage {
         return createdAt;
     }
 
-    public User getUser() {
-        return user;
-    }
+    // public User getUser() {
+    //     return user;
+    // }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+    // public void setUser(User user) {
+    //     this.user = user;
+    // }
 }

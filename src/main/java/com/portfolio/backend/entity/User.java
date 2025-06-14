@@ -1,7 +1,6 @@
 package com.portfolio.backend.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 
 /**
  * Represents a user in the application.
@@ -39,6 +38,7 @@ public class User {
      * Email address of the user.
      * Can be used for authentication or communication purposes.
      */
+    @Email(message = "Invalid email")
     private String email;
 
     /**
@@ -74,8 +74,9 @@ public class User {
      * List of contact messages associated with the user.
      * One-to-Many relationship: a user can have multiple contact messages.
      */
-    @OneToMany(mappedBy = "user") // Indicates the inverse side of the relationship with "user" in ContactMessage.
-    private List<ContactMessage> contactMessages;
+    // @OneToMany(mappedBy = "user") // Indicates the inverse side of the
+    // relationship with "user" in ContactMessage.
+    // private List<ContactMessage> contactMessages;
 
     public Long getId() {
         return id;
@@ -133,12 +134,12 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public List<ContactMessage> getContactMessages() {
-        return contactMessages;
-    }
+    // public List<ContactMessage> getContactMessages() {
+    // return contactMessages;
+    // }
 
-    public void setContactMessages(List<ContactMessage> contactMessages) {
-        this.contactMessages = contactMessages;
-    }
+    // public void setContactMessages(List<ContactMessage> contactMessages) {
+    // this.contactMessages = contactMessages;
+    // }
 
 }
