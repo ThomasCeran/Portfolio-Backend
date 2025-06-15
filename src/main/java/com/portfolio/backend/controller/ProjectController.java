@@ -3,6 +3,7 @@ package com.portfolio.backend.controller;
 import com.portfolio.backend.entity.Project;
 import com.portfolio.backend.service.ProjectService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,8 @@ import java.util.List;
  * REST controller for managing Project entity operations.
  */
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/api/admin/projects")
+@PreAuthorize("hasRole('ADMIN')")
 public class ProjectController {
 
     private final ProjectService projectService;
