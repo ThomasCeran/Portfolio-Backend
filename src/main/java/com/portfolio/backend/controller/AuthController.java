@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -43,14 +44,14 @@ public class AuthController {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
+                            loginRequest.getEmail().toLowerCase(Locale.ROOT),
                             loginRequest.getPassword()));
             // Authentication successful, generate JWT
-            String token = jwtUtil.generateToken(loginRequest.getUsername());
+            String token = jwtUtil.generateToken(loginRequest.getEmail());
             return ResponseEntity.ok(Map.of("token", token));
         } catch (AuthenticationException ex) {
             // Invalid credentials
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid username or password"));
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid email or password"));
         }
     }
 
@@ -58,15 +59,15 @@ public class AuthController {
      * DTO for authentication requests.
      */
     public static class AuthRequest {
-        private String username;
+        private String email;
         private String password;
 
-        public String getUsername() {
-            return username;
+        public String getEmail() {
+            return email;
         }
 
-        public void setUsername(String username) {
-            this.username = username;
+        public void setEmail(String email) {
+            this.email = email;
         }
 
         public String getPassword() {

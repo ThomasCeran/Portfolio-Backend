@@ -13,6 +13,11 @@ import java.util.function.Function;
 
 /**
  * Utility class for generating and validating JWT tokens.
+ * <p>
+ * Supports custom claims (e.g., user roles) and handles all typical
+ * operations such as token creation, parsing, validation, and extraction
+ * of custom claims.
+ * </p>
  */
 @Component
 public class JwtUtil {
@@ -21,11 +26,12 @@ public class JwtUtil {
     private final long expirationTime;
 
     /**
-     * Constructor for JwtUtil. Uses Spring @Value to inject properties.
-     * 
-     * @param secret         The secret key as a string (should be long enough for
-     *                       HS256).
-     * @param expirationTime Token expiration in milliseconds.
+     * Constructs the JwtUtil with the secret key and token expiration time.
+     *
+     * @param secret         The secret key used for signing tokens (must be at
+     *                       least 256 bits for HS256).
+     * @param expirationTime The expiration time in milliseconds for generated
+     *                       tokens.
      */
     public JwtUtil(
             @Value("${jwt.secret}") String secret,
@@ -35,11 +41,12 @@ public class JwtUtil {
     }
 
     /**
-     * Generates a JWT token for a given username and optional claims.
-     * 
-     * @param username    The username.
-     * @param extraClaims Optional extra claims (can be null).
-     * @return The JWT token as a String.
+     * Generates a JWT token for the given username (subject) and additional claims.
+     *
+     * @param username    The user's unique identifier (subject, typically email).
+     * @param extraClaims A map of additional claims to include (e.g., roles); can
+     *                    be null.
+     * @return A signed JWT token string.
      */
     public String generateToken(String username, Map<String, Object> extraClaims) {
         Map<String, Object> claims = new HashMap<>();
@@ -56,21 +63,33 @@ public class JwtUtil {
     }
 
     /**
-     * Generates a JWT token for a given username without extra claims.
+     * Generates a JWT token for the given username without extra claims.
+     *
+     * @param username The user's unique identifier (subject).
+     * @return A signed JWT token string.
      */
     public String generateToken(String username) {
         return generateToken(username, null);
     }
 
     /**
-     * Extracts username (subject) from JWT token.
+     * Extracts the username (subject) from a JWT token.
+     *
+     * @param token The JWT token.
+     * @return The username (subject).
      */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
     /**
-     * Extracts a specific claim from JWT token.
+     * Extracts a specific claim from a JWT token using a claim resolver.
+     *
+     * @param token          The JWT token.
+     * @param claimsResolver A function that takes Claims and returns the desired
+     *                       value.
+     * @param <T>            The type of the claim.
+     * @return The extracted claim value.
      */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -78,7 +97,12 @@ public class JwtUtil {
     }
 
     /**
-     * Validates a token: correct signature, not expired, username matches.
+     * Validates a token by checking the signature, expiration, and that the
+     * username matches.
+     *
+     * @param token    The JWT token.
+     * @param username The expected username (subject).
+     * @return True if valid, false otherwise.
      */
     public boolean validateToken(String token, String username) {
         try {
@@ -91,7 +115,10 @@ public class JwtUtil {
     }
 
     /**
-     * Checks if the token is expired.
+     * Checks whether a token has expired.
+     *
+     * @param token The JWT token.
+     * @return True if expired, false otherwise.
      */
     public boolean isTokenExpired(String token) {
         try {
@@ -103,7 +130,10 @@ public class JwtUtil {
     }
 
     /**
-     * Parses the token and returns all claims.
+     * Parses the JWT token and returns all claims.
+     *
+     * @param token The JWT token.
+     * @return The Claims object with all token data.
      */
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
@@ -114,7 +144,10 @@ public class JwtUtil {
     }
 
     /**
-     * Get extra claims (custom data) from JWT.
+     * Extracts all custom (extra) claims from the JWT, excluding standard claims.
+     *
+     * @param token The JWT token.
+     * @return A map of custom claims (e.g., roles).
      */
     public Map<String, Object> extractAllExtraClaims(String token) {
         Claims claims = extractAllClaims(token);

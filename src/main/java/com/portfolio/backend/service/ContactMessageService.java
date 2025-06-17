@@ -2,6 +2,9 @@ package com.portfolio.backend.service;
 
 import com.portfolio.backend.entity.ContactMessage;
 import com.portfolio.backend.repository.ContactMessageRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,4 +103,12 @@ public class ContactMessageService {
     public void deleteMessageById(Long id) {
         contactMessageRepository.deleteById(id);
     }
+
+    public void markAsRead(Long id) {
+        ContactMessage msg = contactMessageRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Message not found"));
+        msg.setRead(true);
+        contactMessageRepository.save(msg);
+    }
+
 }

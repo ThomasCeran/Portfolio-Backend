@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/admin/messages")
-@PreAuthorize("hasRole('ADMIN')")
+
 public class AdminContactMessageController {
 
     private final ContactMessageService contactMessageService;
@@ -64,5 +64,17 @@ public class AdminContactMessageController {
     public ResponseEntity<Void> deleteMessageById(@PathVariable Long id) {
         contactMessageService.deleteMessageById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Marks the contact message as read.
+     *
+     * @param id the ID of the message to mark as read
+     * @return HTTP 200 if successful
+     */
+    @PostMapping("/{id}/read")
+    public ResponseEntity<Void> markMessageAsRead(@PathVariable Long id) {
+        contactMessageService.markAsRead(id);
+        return ResponseEntity.ok().build();
     }
 }

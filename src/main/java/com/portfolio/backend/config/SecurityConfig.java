@@ -10,50 +10,66 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.portfolio.backend.security.JwtFilter;
 import com.portfolio.backend.service.CustomUserDetailsService;
 
 /**
  * Main security configuration class for the application.
- * Configures HTTP security, authentication, and password encoding.
+ * <p>
+ * Configures HTTP security, authentication, JWT filter, and password encoding.
+ * </p>
  */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final JwtFilter jwtFilter;
 
     /**
-     * Constructor for injecting the custom UserDetailsService.
-     * 
-     * @param customUserDetailsService Custom service for loading user-specific
-     *                                 data.
+     * Constructs the SecurityConfig with required dependencies.
+     *
+     * @param customUserDetailsService The custom service for loading user-specific
+     *                                 data from the database.
+     * @param jwtFilter                The custom JWT filter for token-based
+     *                                 authentication.
      */
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtFilter jwtFilter) {
         this.customUserDetailsService = customUserDetailsService;
+        this.jwtFilter = jwtFilter;
     }
 
     /**
      * Configures the main security filter chain.
-     * - Disables CSRF for REST APIs.
-     * - Restricts /api/admin/** routes to ADMIN role.
-     * - Allows unrestricted access to /api/messages/**.
-     * - Requires authentication for all other routes.
-     * - Uses the custom UserDetailsService for user lookups.
+     * <ul>
+     * <li>Disables CSRF for REST APIs.</li>
+     * <li>Restricts <code>/api/admin/**</code> routes to users with the ADMIN
+     * role.</li>
+     * <li>Allows unrestricted access to <code>/api/messages/**</code> and
+     * <code>/api/auth/**</code>.</li>
+     * <li>Requires authentication for all other routes.</li>
+     * <li>Applies the custom JWT filter before Spring's
+     * UsernamePasswordAuthenticationFilter.</li>
+     * </ul>
      *
-     * @param http HttpSecurity configuration object.
-     * @return Configured SecurityFilterChain.
+     * @param http The HttpSecurity configuration object.
+     * @return The configured SecurityFilterChain.
      * @throws Exception In case of configuration errors.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors() 
+                .and()
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/messages/**").permitAll()
                         .anyRequest().authenticated())
-                .userDetailsService(customUserDetailsService);
+                .userDetailsService(customUserDetailsService)
+                .addFilterBefore(jwtFilter,
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -61,7 +77,7 @@ public class SecurityConfig {
      * Declares the password encoder bean using BCrypt.
      * All passwords will be hashed and verified using BCrypt.
      *
-     * @return PasswordEncoder instance.
+     * @return A PasswordEncoder instance.
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -71,8 +87,8 @@ public class SecurityConfig {
     /**
      * Declares the AuthenticationManager bean for authentication needs.
      *
-     * @param authenticationConfiguration Spring AuthenticationConfiguration.
-     * @return AuthenticationManager instance.
+     * @param authenticationConfiguration The Spring AuthenticationConfiguration.
+     * @return The AuthenticationManager instance.
      * @throws Exception In case of configuration errors.
      */
     @Bean
