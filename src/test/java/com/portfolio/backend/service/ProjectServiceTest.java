@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -133,4 +134,60 @@ class ProjectServiceTest {
 
         verify(projectRepository, times(1)).deleteById(projectId);
     }
+
+    /**
+     * Test the updateProject method to ensure it correctly updates and saves a
+     * project.
+     */
+    @Test
+    void testUpdateProject_Success() {
+        // Arrange
+        Long projectId = 1L;
+        Project existingProject = new Project();
+        existingProject.setId(projectId);
+        existingProject.setTitle("Old Title");
+        existingProject.setDescription("Old description");
+        existingProject.setStatus("Draft");
+
+        Project updatedProject = new Project();
+        updatedProject.setTitle("New Title");
+        updatedProject.setDescription("New description");
+        updatedProject.setStatus("Completed");
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(existingProject));
+        when(projectRepository.save(any(Project.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        Project result = projectService.updateProject(projectId, updatedProject);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("New Title", result.getTitle());
+        assertEquals("New description", result.getDescription());
+        assertEquals("Completed", result.getStatus());
+        verify(projectRepository, times(1)).findById(projectId);
+        verify(projectRepository, times(1)).save(existingProject);
+    }
+
+    /**
+     * Test the updateProject method when the project does not exist (should throw
+     * exception).
+     */
+    @Test
+    void testUpdateProject_ProjectNotFound() {
+        // Arrange
+        Long projectId = 999L;
+        Project updatedProject = new Project();
+        when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            projectService.updateProject(projectId, updatedProject);
+        });
+
+        assertTrue(exception.getMessage().contains("Project not found"));
+        verify(projectRepository, times(1)).findById(projectId);
+        verify(projectRepository, never()).save(any(Project.class));
+    }
+
 }

@@ -1,13 +1,14 @@
 package com.portfolio.backend.service;
 
-import com.portfolio.backend.entity.Project;
-import com.portfolio.backend.repository.ProjectRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.portfolio.backend.entity.Project;
+import com.portfolio.backend.repository.ProjectRepository;
 
 /**
  * Service class for managing Project entity operations.
@@ -115,4 +116,32 @@ public class ProjectService {
     public void deleteProjectById(Long id) {
         projectRepository.deleteById(id);
     }
+
+    /**
+     * Updates an existing project identified by its ID with the provided data.
+     * <p>
+     * This method retrieves the project from the database, updates its fields
+     * with the values from {@code updatedProject}, and persists the changes.
+     * </p>
+     *
+     * @param projectId      the ID of the project to update
+     * @param updatedProject the project object containing updated data
+     * @return the updated Project entity
+     * @throws IllegalArgumentException if no project is found with the given ID
+     */
+    @Transactional
+    public Project updateProject(Long projectId, Project updatedProject) {
+        Project existingProject = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found with ID: " + projectId));
+
+        existingProject.setTitle(updatedProject.getTitle());
+        existingProject.setDescription(updatedProject.getDescription());
+        existingProject.setStatus(updatedProject.getStatus());
+        existingProject.setUrl(updatedProject.getUrl());
+        existingProject.setCreatedAt(updatedProject.getCreatedAt());
+        existingProject.setSkills(updatedProject.getSkills());
+
+        return projectRepository.save(existingProject);
+    }
+
 }
