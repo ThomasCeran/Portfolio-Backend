@@ -46,8 +46,16 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail().toLowerCase(Locale.ROOT),
                             loginRequest.getPassword()));
-            // Authentication successful, generate JWT
-            String token = jwtUtil.generateToken(loginRequest.getEmail());
+            // Get the user role
+            org.springframework.security.core.userdetails.User userDetails = (org.springframework.security.core.userdetails.User) authentication
+                    .getPrincipal();
+            String role = userDetails.getAuthorities().stream()
+                    .findFirst()
+                    .map(auth -> auth.getAuthority().replace("ROLE_", ""))
+                    .orElse("USER");
+            // Generate a JWT with a role as claim
+            Map<String, Object> claims = Map.of("role", role);
+            String token = jwtUtil.generateToken(loginRequest.getEmail(), claims);
             return ResponseEntity.ok(Map.of("token", token));
         } catch (AuthenticationException ex) {
             // Invalid credentials

@@ -1,20 +1,27 @@
 package com.portfolio.backend.controller;
 
-import com.portfolio.backend.entity.Project;
-import com.portfolio.backend.service.ProjectService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.portfolio.backend.entity.Project;
+import com.portfolio.backend.service.ProjectService;
 
 /**
  * REST controller for managing Project entity operations.
  */
 @RestController
-@RequestMapping("/api/admin/projects")
-@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/api/projects")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -99,4 +106,18 @@ public class ProjectController {
         projectService.deleteProjectById(projectId);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Updates an existing project by its ID.
+     *
+     * @param projectId      the ID of the project to update
+     * @param updatedProject the updated project data to apply
+     * @return the updated project as a response entity
+     */
+    @PutMapping("/{projectId}")
+    public ResponseEntity<Project> updateProject(@PathVariable Long projectId, @RequestBody Project updatedProject) {
+        Project saved = projectService.updateProject(projectId, updatedProject);
+        return ResponseEntity.ok(saved);
+    }
+
 }

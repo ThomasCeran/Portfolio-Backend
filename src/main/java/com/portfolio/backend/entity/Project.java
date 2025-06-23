@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -76,6 +78,7 @@ public class Project {
      * Many-to-Many relationship between `Project` and `Skill`.
      */
     @ManyToMany
+    @JsonIgnore
     @JoinTable(name = "project_skill", // Join table linking "project" and "skill"
             joinColumns = @JoinColumn(name = "project_id"), // Column linking the project
             inverseJoinColumns = @JoinColumn(name = "skill_id") // Column linking the skills
