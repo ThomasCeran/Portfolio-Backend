@@ -28,5 +28,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Permits common HTTP methods
                 .allowedHeaders("*") // Accepts all request headers
                 .allowCredentials(true); // Allows sending credentials (cookies, auth headers) if needed
+
+    }
+
+    @Override
+    public void addResourceHandlers(
+            org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:uploads/");
     }
 }
