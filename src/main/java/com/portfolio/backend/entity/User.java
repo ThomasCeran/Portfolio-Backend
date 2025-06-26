@@ -70,14 +70,6 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    /**
-     * List of contact messages associated with the user.
-     * One-to-Many relationship: a user can have multiple contact messages.
-     */
-    // @OneToMany(mappedBy = "user") // Indicates the inverse side of the
-    // relationship with "user" in ContactMessage.
-    // private List<ContactMessage> contactMessages;
-
     public Long getId() {
         return id;
     }
@@ -133,13 +125,5 @@ public class User {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    // public List<ContactMessage> getContactMessages() {
-    // return contactMessages;
-    // }
-
-    // public void setContactMessages(List<ContactMessage> contactMessages) {
-    // this.contactMessages = contactMessages;
-    // }
 
 }
