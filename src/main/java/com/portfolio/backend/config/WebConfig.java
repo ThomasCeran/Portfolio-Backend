@@ -1,5 +1,6 @@
 package com.portfolio.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -16,6 +17,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @Value("${cors.allowed-origin}")
+    private String allowedOrigin;
+
     /**
      * Configures CORS mappings for all API endpoints.
      *
@@ -24,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Applies this config to all endpoints
-                .allowedOrigins("http://localhost:5173") // Authorizes only this frontend origin (React)
+                .allowedOrigins(allowedOrigin) // Authorizes only this frontend origin (React)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Permits common HTTP methods
                 .allowedHeaders("*") // Accepts all request headers
                 .allowCredentials(true); // Allows sending credentials (cookies, auth headers) if needed
