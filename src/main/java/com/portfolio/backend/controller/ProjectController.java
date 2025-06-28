@@ -4,12 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -84,40 +80,40 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.findProjectsBySkillName(skillName));
     }
 
-    /**
-     * Saves a new project.
-     *
-     * @param project the project to be saved.
-     * @return the saved project.
-     */
-    @PostMapping
-    public ResponseEntity<Project> saveProject(@RequestBody Project project) {
-        return ResponseEntity.ok(projectService.saveProject(project));
-    }
+    // /**
+    //  * Saves a new project.
+    //  *
+    //  * @param project the project to be saved.
+    //  * @return the saved project.
+    //  */
+    // @PostMapping
+    // public ResponseEntity<Project> saveProject(@RequestBody Project project) {
+    //     return ResponseEntity.ok(projectService.saveProject(project));
+    // }
 
-    /**
-     * Deletes a project by ID.
-     *
-     * @param projectId the ID of the project to be deleted.
-     * @return response indicating success or failure.
-     */
-    @DeleteMapping("/{projectId}")
-    public ResponseEntity<Void> deleteProjectById(@PathVariable Long projectId) {
-        projectService.deleteProjectById(projectId);
-        return ResponseEntity.noContent().build();
-    }
+    // /**
+    //  * Deletes a project by ID.
+    //  *
+    //  * @param projectId the ID of the project to be deleted
+    //  * @return response indicating success or failure.
+    //  */
+    // @DeleteMapping("/{projectId}")
+    // public ResponseEntity<Void> deleteProjectById(@PathVariable Long projectId) {
+    //     projectService.deleteProjectById(projectId);
+    //     return ResponseEntity.noContent().build();
+    // }
 
-    /**
-     * Updates an existing project by its ID.
-     *
-     * @param projectId      the ID of the project to update
-     * @param updatedProject the updated project data to apply
-     * @return the updated project as a response entity
-     */
-    @PutMapping("/{projectId}")
-    public ResponseEntity<Project> updateProject(@PathVariable Long projectId, @RequestBody Project updatedProject) {
-        Project saved = projectService.updateProject(projectId, updatedProject);
-        return ResponseEntity.ok(saved);
-    }
+    // /**
+    //  * Updates an existing project by its ID.
+    //  *
+    //  * @param projectId      the ID of the project to update
+    //  * @param updatedProject the updated project data to apply
+    //  * @return the updated project as a response entity
+    //  */
+    // @PutMapping("/{projectId}")
+    // public ResponseEntity<Project> updateProject(@PathVariable Long projectId, @RequestBody Project updatedProject) {
+    //     Project saved = projectService.updateProject(projectId, updatedProject);
+    //     return ResponseEntity.ok(saved);
+    // }
 
 }

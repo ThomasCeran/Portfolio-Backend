@@ -93,26 +93,26 @@ class ProjectControllerTest {
         verify(projectService, times(1)).findProjectsBySkillName("Spring Boot");
     }
 
-    @Test
-    void testSaveProject() {
-        Project project = new Project();
-        project.setTitle("New Project");
-        when(projectService.saveProject(project)).thenReturn(project);
+    // @Test
+    // void testSaveProject() {
+    //     Project project = new Project();
+    //     project.setTitle("New Project");
+    //     when(projectService.saveProject(project)).thenReturn(project);
 
-        ResponseEntity<Project> response = projectController.saveProject(project);
+    //     ResponseEntity<Project> response = projectController.saveProject(project);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        verify(projectService, times(1)).saveProject(project);
-    }
+    //     assertEquals(200, response.getStatusCode().value());
+    //     assertNotNull(response.getBody());
+    //     verify(projectService, times(1)).saveProject(project);
+    // }
 
-    @Test
-    void testDeleteProjectById() {
-        Long projectId = 1L;
+    // @Test
+    // void testDeleteProjectById() {
+    //     Long projectId = 1L;
 
-        ResponseEntity<Void> response = projectController.deleteProjectById(projectId);
+    //     ResponseEntity<Void> response = projectController.deleteProjectById(projectId);
 
-        assertEquals(204, response.getStatusCode().value());
-        verify(projectService, times(1)).deleteProjectById(projectId);
-    }
+    //     assertEquals(204, response.getStatusCode().value());
+    //     verify(projectService, times(1)).deleteProjectById(projectId);
+    // }
 }

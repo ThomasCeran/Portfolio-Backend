@@ -17,8 +17,8 @@ import com.portfolio.backend.entity.Project;
 import com.portfolio.backend.entity.Skill;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = Replace.NONE) // Utilise la vraie base de données si configurée
-@ActiveProfiles("test") // Utilise le profil de test avec H2
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@ActiveProfiles("test")
 class ProjectRepositoryTest {
 
     @Autowired
@@ -29,7 +29,7 @@ class ProjectRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Ajouter des données de test avant chaque test
+        
         Project project1 = new Project();
         project1.setTitle("Portfolio Website");
         project1.setDescription("A personal portfolio website.");
