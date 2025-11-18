@@ -1,49 +1,103 @@
 package com.portfolio.backend.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.Instant;
+import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
+import com.portfolio.backend.dto.AuthRequest;
+import com.portfolio.backend.dto.AuthResponse;
 import com.portfolio.backend.security.JwtUtil;
+import com.portfolio.backend.security.TokenBlacklistService;
 
 class AuthControllerTest {
 
-    private MockMvc mockMvc;
+    @Mock
+    private AuthenticationManager authenticationManager;
 
     @Mock
     private JwtUtil jwtUtil;
 
-    @InjectMocks
+    @Mock
+    private TokenBlacklistService tokenBlacklistService;
+
     private AuthController authController;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(authController).build();
+        authController = new AuthController(authenticationManager, jwtUtil, tokenBlacklistService);
     }
 
     @Test
-    void testLogin() throws Exception {
-        when(jwtUtil.generateToken("testuser")).thenReturn("validToken");
+    void login_returnsToken_whenCredentialsAreValid() {
+        AuthRequest request = new AuthRequest();
+        request.setEmail("admin@example.com");
+        request.setPassword("secret");
 
-        mockMvc.perform(post("/api/auth/login")
-                .param("username", "testuser")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("validToken"));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                new User("admin@example.com".toLowerCase(Locale.ROOT), "secret",
+                        java.util.List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))),
+                null);
 
-        verify(jwtUtil, times(1)).generateToken("testuser");
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(jwtUtil.generateToken(eq("admin@example.com"), anyMap())).thenReturn("jwt-token");
+
+        ResponseEntity<?> response = authController.login(request);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        AuthResponse body = (AuthResponse) response.getBody();
+        assertEquals("jwt-token", body.getToken());
+        verify(jwtUtil, times(1)).generateToken(eq("admin@example.com"), anyMap());
+    }
+
+    @Test
+    void login_returns401_whenAuthenticationFails() {
+        AuthRequest request = new AuthRequest();
+        request.setEmail("admin@example.com");
+        request.setPassword("bad");
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new BadCredentialsException("bad"));
+
+        ResponseEntity<?> response = authController.login(request);
+
+        assertEquals(401, response.getStatusCode().value());
+        verify(jwtUtil, never()).generateToken(any(), anyMap());
+    }
+
+    @Test
+    void logout_revokesToken_whenHeaderPresent() {
+        org.springframework.mock.web.MockHttpServletRequest request = new org.springframework.mock.web.MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer token");
+
+        when(jwtUtil.isTokenExpired("token")).thenReturn(false);
+        when(jwtUtil.extractExpirationInstant("token")).thenReturn(Instant.now().plusSeconds(60));
+
+        ResponseEntity<Void> response = authController.logout(request);
+
+        assertEquals(204, response.getStatusCode().value());
+        verify(tokenBlacklistService, times(1)).revoke(eq("token"), any(Instant.class));
     }
 }

@@ -3,6 +3,7 @@ package com.portfolio.backend.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -86,7 +87,7 @@ public class SkillController {
      * @return List of skills associated with the project.
      */
     @GetMapping("/project/{projectId}")
-    public ResponseEntity<List<Skill>> getSkillsByProjectId(@PathVariable Long projectId) {
+    public ResponseEntity<List<Skill>> getSkillsByProjectId(@PathVariable UUID projectId) {
         List<Skill> skills = skillService.findSkillsByProjectId(projectId);
         return ResponseEntity.ok(skills);
     }

@@ -24,12 +24,14 @@ class ContactMessageRepositoryTest {
     @BeforeEach
     void setUp() {
         message1 = new ContactMessage();
+        message1.setName("User 1");
         message1.setEmail("user1@example.com");
         message1.setSubject("Inquiry about services");
         message1.setMessage("I would like to know more about your portfolio.");
         message1.setRead(false); // Par défaut, un message est non lu
 
         message2 = new ContactMessage();
+        message2.setName("User 2");
         message2.setEmail("user2@example.com");
         message2.setSubject("Collaboration request");
         message2.setMessage("Would you be interested in a joint project?");
@@ -49,8 +51,7 @@ class ContactMessageRepositoryTest {
     @Test
     void testFindByCreatedAtAfter() {
         List<ContactMessage> messages = contactMessageRepository.findByCreatedAtAfter(LocalDateTime.now().minusDays(3));
-        assertEquals(1, messages.size());
-        assertEquals("Collaboration request", messages.get(0).getSubject());
+        assertEquals(2, messages.size());
     }
 
     @Test

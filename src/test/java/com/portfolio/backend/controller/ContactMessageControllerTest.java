@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -48,15 +49,16 @@ class ContactMessageControllerTest {
     @Test
     void testGetMessageById() {
         ContactMessage message = new ContactMessage();
-        message.setId(1L);
-        when(contactMessageService.findMessageById(1L)).thenReturn(Optional.of(message));
+        UUID messageId = UUID.randomUUID();
+        message.setId(messageId);
+        when(contactMessageService.findMessageById(messageId)).thenReturn(Optional.of(message));
 
-        ResponseEntity<ContactMessage> response = contactMessageController.getMessageById(1L);
+        ResponseEntity<ContactMessage> response = contactMessageController.getMessageById(messageId);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
-        assertEquals(1L, response.getBody().getId());
-        verify(contactMessageService, times(1)).findMessageById(1L);
+        assertEquals(messageId, response.getBody().getId());
+        verify(contactMessageService, times(1)).findMessageById(messageId);
     }
 
     @Test
@@ -122,7 +124,7 @@ class ContactMessageControllerTest {
 
     @Test
     void testDeleteMessageById() {
-        Long messageId = 1L;
+        UUID messageId = UUID.randomUUID();
 
         ResponseEntity<Void> response = contactMessageController.deleteMessageById(messageId);
 

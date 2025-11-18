@@ -3,8 +3,10 @@ package com.portfolio.backend.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +23,7 @@ import com.portfolio.backend.service.ContactMessageService;
  */
 @RestController
 @RequestMapping("/api/admin/messages")
-
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminContactMessageController {
 
     private final ContactMessageService contactMessageService;
@@ -36,7 +38,7 @@ public class AdminContactMessageController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ContactMessage> getMessageById(@PathVariable Long id) {
+    public ResponseEntity<ContactMessage> getMessageById(@PathVariable UUID id) {
         Optional<ContactMessage> message = contactMessageService.findMessageById(id);
         return message.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -67,7 +69,7 @@ public class AdminContactMessageController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMessageById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteMessageById(@PathVariable UUID id) {
         contactMessageService.deleteMessageById(id);
         return ResponseEntity.noContent().build();
     }
@@ -79,8 +81,8 @@ public class AdminContactMessageController {
      * @return HTTP 200 if successful
      */
     @PostMapping("/{id}/read")
-    public ResponseEntity<Void> markMessageAsRead(@PathVariable Long id) {
+    public ResponseEntity<Void> markMessageAsRead(@PathVariable UUID id) {
         contactMessageService.markAsRead(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

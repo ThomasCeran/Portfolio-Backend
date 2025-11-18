@@ -3,6 +3,7 @@ package com.portfolio.backend.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,7 +86,7 @@ public class SkillService {
      * @return a list of skills associated with the project.
      */
     @Transactional(readOnly = true)
-    public List<Skill> findSkillsByProjectId(Long projectId) {
+    public List<Skill> findSkillsByProjectId(UUID projectId) {
         return skillRepository.findByProjectId(projectId);
     }
 

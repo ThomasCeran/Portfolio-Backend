@@ -1,7 +1,9 @@
 package com.portfolio.backend.service;
 
+import com.portfolio.backend.dto.ProjectRequest;
 import com.portfolio.backend.entity.Project;
 import com.portfolio.backend.repository.ProjectRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,15 +49,16 @@ class ProjectServiceTest {
 
     @Test
     void testFindProjectById() {
+        UUID projectId = UUID.randomUUID();
         Project project = new Project();
-        project.setId(1L);
-        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        project.setId(projectId);
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
 
-        Optional<Project> result = projectService.findProjectById(1L);
+        Optional<Project> result = projectService.findProjectById(projectId);
 
         assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getId());
-        verify(projectRepository, times(1)).findById(1L);
+        assertEquals(projectId, result.get().getId());
+        verify(projectRepository, times(1)).findById(projectId);
     }
 
     @Test
@@ -114,21 +118,27 @@ class ProjectServiceTest {
     }
 
     @Test
-    void testSaveProject() {
-        Project project = new Project();
-        project.setTitle("New Project");
-        when(projectRepository.save(project)).thenReturn(project);
+    void testCreateProject() {
+        ProjectRequest request = new ProjectRequest();
+        request.setTitle("New Project");
+        request.setDescription("Desc");
+        request.setStatus("completed");
+        Project saved = new Project();
+        saved.setTitle("New Project");
+        saved.setDescription("Desc");
+        saved.setStatus("completed");
+        when(projectRepository.save(any(Project.class))).thenReturn(saved);
 
-        Project result = projectService.saveProject(project);
+        Project result = projectService.createProject(request);
 
         assertNotNull(result);
         assertEquals("New Project", result.getTitle());
-        verify(projectRepository, times(1)).save(project);
+        verify(projectRepository, times(1)).save(any(Project.class));
     }
 
     @Test
     void testDeleteProjectById() {
-        Long projectId = 1L;
+        UUID projectId = UUID.randomUUID();
 
         projectService.deleteProjectById(projectId);
 
@@ -142,23 +152,24 @@ class ProjectServiceTest {
     @Test
     void testUpdateProject_Success() {
         // Arrange
-        Long projectId = 1L;
+        UUID projectId = UUID.randomUUID();
         Project existingProject = new Project();
         existingProject.setId(projectId);
         existingProject.setTitle("Old Title");
         existingProject.setDescription("Old description");
         existingProject.setStatus("Draft");
 
-        Project updatedProject = new Project();
-        updatedProject.setTitle("New Title");
-        updatedProject.setDescription("New description");
-        updatedProject.setStatus("Completed");
+        ProjectRequest request = new ProjectRequest();
+        request.setTitle("New Title");
+        request.setDescription("New description");
+        request.setStatus("Completed");
+        request.setSummary("Summary");
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(existingProject));
         when(projectRepository.save(any(Project.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        Project result = projectService.updateProject(projectId, updatedProject);
+        Project result = projectService.updateProject(projectId, request);
 
         // Assert
         assertNotNull(result);
@@ -176,13 +187,13 @@ class ProjectServiceTest {
     @Test
     void testUpdateProject_ProjectNotFound() {
         // Arrange
-        Long projectId = 999L;
-        Project updatedProject = new Project();
+        UUID projectId = UUID.randomUUID();
+        ProjectRequest request = new ProjectRequest();
         when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
 
         // Act & Assert
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            projectService.updateProject(projectId, updatedProject);
+            projectService.updateProject(projectId, request);
         });
 
         assertTrue(exception.getMessage().contains("Project not found"));

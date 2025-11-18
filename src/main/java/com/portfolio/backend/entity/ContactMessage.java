@@ -1,18 +1,33 @@
 package com.portfolio.backend.entity;
 
 import java.time.LocalDateTime;
-import jakarta.persistence.*;
+import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 
 /**
  * Represents a contact message sent by a user.
  */
 @Entity
+@Table(name = "contact_message")
 public class ContactMessage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    /**
+     * Name of the sender.
+     */
+    @Column(nullable = false)
+    private String name;
 
     /**
      * Email of the sender (optional, useful for unregistered users).
@@ -24,6 +39,7 @@ public class ContactMessage {
     /**
      * Subject of the contact message.
      */
+    @Column(nullable = false)
     private String subject;
 
     /**
@@ -62,12 +78,20 @@ public class ContactMessage {
     }
 
     // --- Getters and Setters ---
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {

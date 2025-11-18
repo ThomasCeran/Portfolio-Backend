@@ -1,15 +1,16 @@
 package com.portfolio.backend.entity;
 
 import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
-
-import jakarta.persistence.Id;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
 
 /**
  * Represents a skill in the application.
@@ -67,6 +68,13 @@ public class Skill {
     @ManyToMany(mappedBy = "skills") // Defines that this entity is the inverse side of the relationship with
                                      // "skills" in Project.
     private List<Project> projects;
+
+    @PrePersist
+    void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     public Long getId() {
         return id;

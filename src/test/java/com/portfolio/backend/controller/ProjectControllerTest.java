@@ -1,7 +1,17 @@
 package com.portfolio.backend.controller;
 
-import com.portfolio.backend.entity.Project;
-import com.portfolio.backend.service.ProjectService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -9,16 +19,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import com.portfolio.backend.dto.ProjectRequest;
+import com.portfolio.backend.entity.Project;
+import com.portfolio.backend.service.ProjectService;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-/**
- * Unit tests for ProjectController class.
- */
 class ProjectControllerTest {
 
     @Mock
@@ -42,6 +46,29 @@ class ProjectControllerTest {
         assertEquals(200, response.getStatusCode().value());
         assertEquals(2, response.getBody().size());
         verify(projectService, times(1)).findAllProjects();
+    }
+
+    @Test
+    void testGetProjectById_found() {
+        UUID projectId = UUID.randomUUID();
+        Project project = new Project();
+        project.setId(projectId);
+        when(projectService.findProjectById(projectId)).thenReturn(Optional.of(project));
+
+        ResponseEntity<Project> response = projectController.getProjectById(projectId);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals(projectId, response.getBody().getId());
+    }
+
+    @Test
+    void testGetProjectById_notFound() {
+        UUID projectId = UUID.randomUUID();
+        when(projectService.findProjectById(projectId)).thenReturn(Optional.empty());
+
+        ResponseEntity<Project> response = projectController.getProjectById(projectId);
+
+        assertEquals(404, response.getStatusCode().value());
     }
 
     @Test
@@ -93,26 +120,44 @@ class ProjectControllerTest {
         verify(projectService, times(1)).findProjectsBySkillName("Spring Boot");
     }
 
-    // @Test
-    // void testSaveProject() {
-    //     Project project = new Project();
-    //     project.setTitle("New Project");
-    //     when(projectService.saveProject(project)).thenReturn(project);
+    @Test
+    void testCreateProject() {
+        ProjectRequest request = new ProjectRequest();
+        request.setTitle("New");
+        request.setDescription("Desc");
+        request.setStatus("completed");
+        Project created = new Project();
+        when(projectService.createProject(any(ProjectRequest.class))).thenReturn(created);
 
-    //     ResponseEntity<Project> response = projectController.saveProject(project);
+        ResponseEntity<Project> response = projectController.createProject(request);
 
-    //     assertEquals(200, response.getStatusCode().value());
-    //     assertNotNull(response.getBody());
-    //     verify(projectService, times(1)).saveProject(project);
-    // }
+        assertEquals(201, response.getStatusCode().value());
+        verify(projectService, times(1)).createProject(request);
+    }
 
-    // @Test
-    // void testDeleteProjectById() {
-    //     Long projectId = 1L;
+    @Test
+    void testUpdateProject() {
+        UUID projectId = UUID.randomUUID();
+        ProjectRequest request = new ProjectRequest();
+        request.setTitle("Updated");
+        request.setDescription("Desc");
+        request.setStatus("completed");
+        Project updated = new Project();
+        when(projectService.updateProject(projectId, request)).thenReturn(updated);
 
-    //     ResponseEntity<Void> response = projectController.deleteProjectById(projectId);
+        ResponseEntity<Project> response = projectController.updateProject(projectId, request);
 
-    //     assertEquals(204, response.getStatusCode().value());
-    //     verify(projectService, times(1)).deleteProjectById(projectId);
-    // }
+        assertEquals(200, response.getStatusCode().value());
+        verify(projectService, times(1)).updateProject(projectId, request);
+    }
+
+    @Test
+    void testDeleteProject() {
+        UUID projectId = UUID.randomUUID();
+
+        ResponseEntity<Void> response = projectController.deleteProject(projectId);
+
+        assertEquals(204, response.getStatusCode().value());
+        verify(projectService, times(1)).deleteProjectById(projectId);
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -127,6 +128,11 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             return true;
         }
+    }
+
+    public Instant extractExpirationInstant(String token) {
+        Date expiration = extractClaim(token, Claims::getExpiration);
+        return expiration.toInstant();
     }
 
     /**

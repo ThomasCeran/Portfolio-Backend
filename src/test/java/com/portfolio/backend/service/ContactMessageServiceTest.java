@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -46,14 +47,15 @@ class ContactMessageServiceTest {
     @Test
     void testFindMessageById() {
         ContactMessage message = new ContactMessage();
-        message.setId(1L);
-        when(contactMessageRepository.findById(1L)).thenReturn(Optional.of(message));
+        UUID messageId = UUID.randomUUID();
+        message.setId(messageId);
+        when(contactMessageRepository.findById(messageId)).thenReturn(Optional.of(message));
 
-        Optional<ContactMessage> result = contactMessageService.findMessageById(1L);
+        Optional<ContactMessage> result = contactMessageService.findMessageById(messageId);
 
         assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getId());
-        verify(contactMessageRepository, times(1)).findById(1L);
+        assertEquals(messageId, result.get().getId());
+        verify(contactMessageRepository, times(1)).findById(messageId);
     }
 
     @Test
@@ -114,7 +116,7 @@ class ContactMessageServiceTest {
 
     @Test
     void testDeleteMessageById() {
-        Long messageId = 1L;
+        UUID messageId = UUID.randomUUID();
 
         contactMessageService.deleteMessageById(messageId);
 

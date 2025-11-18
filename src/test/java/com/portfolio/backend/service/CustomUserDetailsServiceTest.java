@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +23,7 @@ import com.portfolio.backend.repository.UserRepository;
  * Unit tests for CustomUserDetailsService.
  */
 @SpringBootTest
+@ActiveProfiles("test")
 public class CustomUserDetailsServiceTest {
 
     @MockBean
@@ -43,17 +45,17 @@ public class CustomUserDetailsServiceTest {
 
         User user = new User();
         user.setId(1L);
-        user.setUsername("admin");
+        user.setEmail("admin@example.com");
         user.setPassword("password");
         user.setRole(adminRole);
 
-        Mockito.when(userRepository.findByUsername("admin")).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(user));
 
         // Act: Call the service to load user details.
-        UserDetails userDetails = userDetailsService.loadUserByUsername("admin");
+        UserDetails userDetails = userDetailsService.loadUserByUsername("admin@example.com");
 
         // Assert: Check that the username and authorities are correct.
-        assertEquals("admin", userDetails.getUsername());
+        assertEquals("admin@example.com", userDetails.getUsername());
         assertEquals("password", userDetails.getPassword());
         assertTrue(userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")));
@@ -66,7 +68,7 @@ public class CustomUserDetailsServiceTest {
     @Test
     public void testLoadUserByUsername_UserNotFound() {
         // Arrange: No user found for the username.
-        Mockito.when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByEmail("unknown")).thenReturn(Optional.empty());
 
         // Act & Assert: The service should throw UsernameNotFoundException.
         assertThrows(UsernameNotFoundException.class, () -> {

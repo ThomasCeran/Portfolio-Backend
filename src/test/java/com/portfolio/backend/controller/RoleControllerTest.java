@@ -64,7 +64,7 @@ class RoleControllerTest {
         when(roleService.findAllRoles()).thenReturn(roles);
 
         // Act & Assert
-        mockMvc.perform(get("/roles"))
+        mockMvc.perform(get("/api/admin/roles"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
@@ -84,7 +84,7 @@ class RoleControllerTest {
         when(roleService.findRoleById(1L)).thenReturn(role);
 
         // Act & Assert
-        mockMvc.perform(get("/roles/{id}", 1L))
+        mockMvc.perform(get("/api/admin/roles/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value("ADMIN"));
@@ -102,7 +102,7 @@ class RoleControllerTest {
         when(roleService.createRole(any(Role.class))).thenReturn(role);
 
         // Act & Assert
-        mockMvc.perform(post("/roles")
+        mockMvc.perform(post("/api/admin/roles")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"USER\"}"))
                 .andExpect(status().isOk())
@@ -122,7 +122,7 @@ class RoleControllerTest {
         when(roleService.updateRole(eq(1L), any(Role.class))).thenReturn(role);
 
         // Act & Assert
-        mockMvc.perform(put("/roles/{id}", 1L)
+        mockMvc.perform(put("/api/admin/roles/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"ADMIN\"}"))
                 .andExpect(status().isOk())
@@ -138,7 +138,7 @@ class RoleControllerTest {
         doNothing().when(roleService).deleteRole(1L);
 
         // Act & Assert
-        mockMvc.perform(delete("/roles/{id}", 1L))
+        mockMvc.perform(delete("/api/admin/roles/{id}", 1L))
                 .andExpect(status().isNoContent());
 
         verify(roleService, times(1)).deleteRole(1L);

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -86,13 +87,14 @@ class SkillControllerTest {
     @Test
     void testGetSkillsByProjectId() {
         List<Skill> skills = Arrays.asList(new Skill(), new Skill());
-        when(skillService.findSkillsByProjectId(1L)).thenReturn(skills);
+        UUID projectId = UUID.randomUUID();
+        when(skillService.findSkillsByProjectId(projectId)).thenReturn(skills);
 
-        ResponseEntity<List<Skill>> response = skillController.getSkillsByProjectId(1L);
+        ResponseEntity<List<Skill>> response = skillController.getSkillsByProjectId(projectId);
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(2, response.getBody().size());
-        verify(skillService, times(1)).findSkillsByProjectId(1L);
+        verify(skillService, times(1)).findSkillsByProjectId(projectId);
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.portfolio.backend.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -40,7 +41,7 @@ public interface SkillRepository extends JpaRepository<Skill, Long> {
      * @return a list of skills associated with the given project.
      */
     @Query("SELECT s FROM Skill s JOIN s.projects p WHERE p.id = :projectId")
-    List<Skill> findByProjectId(@Param("projectId") Long projectId);
+    List<Skill> findByProjectId(@Param("projectId") UUID projectId);
 
     /**
      * Finds all skills created after a specific date.

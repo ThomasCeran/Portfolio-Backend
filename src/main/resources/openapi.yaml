@@ -1,0 +1,259 @@
+openapi: 3.0.3
+info:
+  title: Portfolio API
+  version: 1.0.0
+  description: |
+    Contrat utilisé par le front (portfolio.thomasceran.dev). Les routes `/api/admin/**`
+    nécessitent un JWT Bearer obtenu via `/api/auth/login`.
+servers:
+  - url: https://api.thomasceran.dev/api
+    description: Production
+  - url: http://localhost:8080/api
+    description: Développement local (Spring Boot)
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Project:
+      type: object
+      required: [title, description, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: Autonoma
+        description:
+          type: string
+          example: Application SaaS full-stack (Spring Boot + React).
+        summary:
+          type: string
+          example: "Refonte API + UI pour accélérer l'onboarding."
+        status:
+          type: string
+          example: completed
+        coverImage:
+          type: string
+          format: uri
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        repoUrl:
+          type: string
+          format: uri
+        liveUrl:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+    ProjectInput:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Project'
+      required: [title, description, status]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+    Message:
+      type: object
+      required: [name, email, subject, message]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        subject:
+          type: string
+        message:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        read:
+          type: boolean
+    AuthRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT Bearer
+security:
+  - bearerAuth: []
+paths:
+  /projects:
+    get:
+      summary: Liste des projets publiés
+      responses:
+        '200':
+          description: Liste des projets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+    post:
+      summary: Créer un projet (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '201':
+          description: Projet créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+  /projects/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 123e4567-e89b-12d3-a456-426614174000
+    get:
+      summary: Détails d'un projet
+      responses:
+        '200':
+          description: Projet trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '404':
+          description: Projet introuvable
+    put:
+      summary: Mettre à jour un projet (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '200':
+          description: Projet mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+    delete:
+      summary: Supprimer un projet (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Projet supprimé
+  /messages:
+    post:
+      summary: Envoyer un message de contact (public)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, subject, message]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                subject:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '202':
+          description: Message reçu
+    get:
+      summary: Lister les messages (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+  /admin/messages/{id}/read:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Marquer un message comme lu (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Statut mis à jour
+  /auth/login:
+    post:
+      summary: Authentification admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: JWT délivré
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Identifiants invalides
+  /auth/logout:
+    post:
+      summary: Invalider le token courant
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Déconnexion effectuée

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -91,12 +92,13 @@ class SkillServiceTest {
     @Test
     void testFindSkillsByProjectId() {
         List<Skill> skills = Arrays.asList(new Skill(), new Skill());
-        when(skillRepository.findByProjectId(1L)).thenReturn(skills);
+        UUID projectId = UUID.randomUUID();
+        when(skillRepository.findByProjectId(projectId)).thenReturn(skills);
 
-        List<Skill> result = skillService.findSkillsByProjectId(1L);
+        List<Skill> result = skillService.findSkillsByProjectId(projectId);
 
         assertEquals(2, result.size());
-        verify(skillRepository, times(1)).findByProjectId(1L);
+        verify(skillRepository, times(1)).findByProjectId(projectId);
     }
 
     @Test

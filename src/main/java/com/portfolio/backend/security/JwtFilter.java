@@ -31,6 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     /**
      * Constructor for dependency injection.
@@ -39,9 +40,11 @@ public class JwtFilter extends OncePerRequestFilter {
      * @param customUserDetailsService the service for loading user details from the
      *                                 database
      */
-    public JwtFilter(JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService) {
+    public JwtFilter(JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService,
+            TokenBlacklistService tokenBlacklistService) {
         this.jwtUtil = jwtUtil;
         this.customUserDetailsService = customUserDetailsService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     /**
@@ -68,6 +71,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Extract the JWT token (remove "Bearer " prefix)
         String token = authorizationHeader.substring(7);
+
+        if (tokenBlacklistService.isRevoked(token)) {
+            logger.debug("Token is revoked, skipping authentication");
+            chain.doFilter(request, response);
+            return;
+        }
 
         String username = null;
         try {

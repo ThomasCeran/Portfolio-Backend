@@ -2,6 +2,7 @@ package com.portfolio.backend.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,7 @@ import com.portfolio.backend.entity.Project;
  * This interface extends JpaRepository, providing CRUD functionality and
  * additional custom queries.
  */
-public interface ProjectRepository extends JpaRepository<Project, Long> {
+public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
     /**
      * Finds projects by their status.

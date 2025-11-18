@@ -3,10 +3,12 @@ package com.portfolio.backend.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.portfolio.backend.dto.ProjectRequest;
 import com.portfolio.backend.entity.Project;
 import com.portfolio.backend.repository.ProjectRepository;
 
@@ -43,7 +45,7 @@ public class ProjectService {
      * @param id the ID of the project.
      * @return an Optional containing the project if found, or empty otherwise.
      */
-    public Optional<Project> findProjectById(Long id) {
+    public Optional<Project> findProjectById(UUID id) {
         return projectRepository.findById(id);
     }
 
@@ -103,7 +105,9 @@ public class ProjectService {
      * @return the saved project.
      */
     @Transactional
-    public Project saveProject(Project project) {
+    public Project createProject(ProjectRequest request) {
+        Project project = new Project();
+        applyRequest(project, request);
         return projectRepository.save(project);
     }
 
@@ -113,7 +117,7 @@ public class ProjectService {
      * @param id the ID of the project to delete.
      */
     @Transactional
-    public void deleteProjectById(Long id) {
+    public void deleteProjectById(UUID id) {
         projectRepository.deleteById(id);
     }
 
@@ -130,18 +134,24 @@ public class ProjectService {
      * @throws IllegalArgumentException if no project is found with the given ID
      */
     @Transactional
-    public Project updateProject(Long projectId, Project updatedProject) {
+    public Project updateProject(UUID projectId, ProjectRequest request) {
         Project existingProject = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found with ID: " + projectId));
-
-        existingProject.setTitle(updatedProject.getTitle());
-        existingProject.setDescription(updatedProject.getDescription());
-        existingProject.setStatus(updatedProject.getStatus());
-        existingProject.setUrl(updatedProject.getUrl());
-        existingProject.setCreatedAt(updatedProject.getCreatedAt());
-        existingProject.setSkills(updatedProject.getSkills());
-
+        applyRequest(existingProject, request);
+        existingProject.setUpdatedAt(LocalDateTime.now());
         return projectRepository.save(existingProject);
+    }
+
+    private void applyRequest(Project project, ProjectRequest request) {
+        project.setTitle(request.getTitle());
+        project.setDescription(request.getDescription());
+        project.setSummary(request.getSummary());
+        project.setStatus(request.getStatus());
+        project.setCoverImage(request.getCoverImage());
+        project.setImages(request.getImages());
+        project.setRepoUrl(request.getRepoUrl());
+        project.setLiveUrl(request.getLiveUrl());
+        project.setTags(request.getTags());
     }
 
 }

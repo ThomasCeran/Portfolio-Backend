@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Service class for managing ContactMessage operations.
@@ -39,7 +40,7 @@ public class ContactMessageService {
      * @param id the ID of the message.
      * @return an Optional containing the message if found, or empty otherwise.
      */
-    public Optional<ContactMessage> findMessageById(Long id) {
+    public Optional<ContactMessage> findMessageById(UUID id) {
         return contactMessageRepository.findById(id);
     }
 
@@ -100,11 +101,11 @@ public class ContactMessageService {
      * @param id the ID of the message to delete.
      */
     @Transactional
-    public void deleteMessageById(Long id) {
+    public void deleteMessageById(UUID id) {
         contactMessageRepository.deleteById(id);
     }
 
-    public void markAsRead(Long id) {
+    public void markAsRead(UUID id) {
         ContactMessage msg = contactMessageRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Message not found"));
         msg.setRead(true);

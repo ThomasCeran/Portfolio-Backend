@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import com.portfolio.backend.entity.ContactMessage;
 
 /**
@@ -12,7 +13,7 @@ import com.portfolio.backend.entity.ContactMessage;
  * This interface extends JpaRepository, providing CRUD functionality
  * and additional custom queries.
  */
-public interface ContactMessageRepository extends JpaRepository<ContactMessage, Long> {
+public interface ContactMessageRepository extends JpaRepository<ContactMessage, java.util.UUID> {
 
     /**
      * Finds messages by sender's email.
