@@ -26,6 +26,11 @@ public class SmsNotificationService implements NotificationService {
     private final String messagingServiceSid;
     private final TwilioClient twilioClient;
 
+    public SmsNotificationService(boolean smsEnabled, String toPhoneNumber, String fromPhoneNumber,
+            TwilioClient twilioClient) {
+        this(smsEnabled, toPhoneNumber, fromPhoneNumber, "", twilioClient);
+    }
+
     public SmsNotificationService(
             @Value("${notification.sms.enabled:false}") boolean smsEnabled,
             @Value("${notification.sms.to-number:}") String toPhoneNumber,
