@@ -39,7 +39,7 @@ class SmsNotificationServiceTest {
                 eq("+33123456789"),
                 eq("+33987654321"),
                 eq(""),
-                contains("Nouveau message de John"));
+                contains("Nouveau message"));
     }
 
     @Test

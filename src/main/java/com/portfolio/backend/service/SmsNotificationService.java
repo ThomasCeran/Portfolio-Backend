@@ -67,14 +67,19 @@ public class SmsNotificationService implements NotificationService {
         }
 
         String trimmedContent = message.getMessage();
-        if (trimmedContent != null && trimmedContent.length() > 120) {
-            trimmedContent = trimmedContent.substring(0, 117) + "...";
+        if (trimmedContent != null && trimmedContent.length() > 160) {
+            trimmedContent = trimmedContent.substring(0, 157) + "...";
         }
 
-        return String.format("Nouveau message de %s (%s): %s - %s",
-                nullToPlaceholder(message.getName(), "Inconnu"),
-                nullToPlaceholder(message.getEmail(), "email?"),
+        String email = nullToPlaceholder(message.getEmail(), "email?");
+        String phone = nullToPlaceholder(message.getPhone(), "tél?");
+        String name = nullToPlaceholder(message.getName(), "Inconnu");
+
+        return String.format("Nouveau message: %s\nDe: %s (%s, %s)\nContenu: %s",
                 nullToPlaceholder(trimmedSubject, "Sans sujet"),
+                name,
+                email,
+                phone,
                 nullToPlaceholder(trimmedContent, "Pas de contenu"));
     }
 
