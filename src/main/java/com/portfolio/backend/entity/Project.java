@@ -62,7 +62,7 @@ public class Project {
     /**
      * Additional gallery images for the project.
      */
-    @ElementCollection
+    @ElementCollection(fetch = jakarta.persistence.FetchType.EAGER)
     @CollectionTable(name = "project_images", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "image_url")
     private List<String> images = new ArrayList<>();
@@ -80,10 +80,46 @@ public class Project {
     /**
      * Tags shown as chips on the frontend.
      */
-    @ElementCollection
+    @ElementCollection(fetch = jakarta.persistence.FetchType.EAGER)
     @CollectionTable(name = "project_tags", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "tag")
     private List<String> tags = new ArrayList<>();
+
+    /**
+     * Long-form content / case study.
+     */
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
+    @ElementCollection(fetch = jakarta.persistence.FetchType.EAGER)
+    @CollectionTable(name = "project_stack", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "stack_item")
+    private List<String> stack = new ArrayList<>();
+
+    @ElementCollection(fetch = jakarta.persistence.FetchType.EAGER)
+    @CollectionTable(name = "project_features", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "feature")
+    private List<String> features = new ArrayList<>();
+
+    @ElementCollection(fetch = jakarta.persistence.FetchType.EAGER)
+    @CollectionTable(name = "project_contributions", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "contribution")
+    private List<String> contributions = new ArrayList<>();
+
+    @ElementCollection(fetch = jakarta.persistence.FetchType.EAGER)
+    @CollectionTable(name = "project_outcomes", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "outcome")
+    private List<String> outcomes = new ArrayList<>();
+
+    private String client;
+    @Column(columnDefinition = "TEXT")
+    private String testimonial;
+    private String testimonialAuthor;
+    private String mood;
+    @Column(columnDefinition = "TEXT")
+    private String personalNote;
+    private String duration;
+    private String role;
 
     /**
      * The creation timestamp of the project.
@@ -201,6 +237,102 @@ public class Project {
 
     public void setTags(List<String> tags) {
         this.tags = tags != null ? new ArrayList<>(tags) : new ArrayList<>();
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public List<String> getStack() {
+        return stack;
+    }
+
+    public void setStack(List<String> stack) {
+        this.stack = stack != null ? new ArrayList<>(stack) : new ArrayList<>();
+    }
+
+    public List<String> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(List<String> features) {
+        this.features = features != null ? new ArrayList<>(features) : new ArrayList<>();
+    }
+
+    public List<String> getContributions() {
+        return contributions;
+    }
+
+    public void setContributions(List<String> contributions) {
+        this.contributions = contributions != null ? new ArrayList<>(contributions) : new ArrayList<>();
+    }
+
+    public List<String> getOutcomes() {
+        return outcomes;
+    }
+
+    public void setOutcomes(List<String> outcomes) {
+        this.outcomes = outcomes != null ? new ArrayList<>(outcomes) : new ArrayList<>();
+    }
+
+    public String getClient() {
+        return client;
+    }
+
+    public void setClient(String client) {
+        this.client = client;
+    }
+
+    public String getTestimonial() {
+        return testimonial;
+    }
+
+    public void setTestimonial(String testimonial) {
+        this.testimonial = testimonial;
+    }
+
+    public String getTestimonialAuthor() {
+        return testimonialAuthor;
+    }
+
+    public void setTestimonialAuthor(String testimonialAuthor) {
+        this.testimonialAuthor = testimonialAuthor;
+    }
+
+    public String getMood() {
+        return mood;
+    }
+
+    public void setMood(String mood) {
+        this.mood = mood;
+    }
+
+    public String getPersonalNote() {
+        return personalNote;
+    }
+
+    public void setPersonalNote(String personalNote) {
+        this.personalNote = personalNote;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public LocalDateTime getCreatedAt() {
