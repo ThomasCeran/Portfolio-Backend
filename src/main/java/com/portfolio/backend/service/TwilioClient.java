@@ -14,4 +14,11 @@ public interface TwilioClient {
      * @param body sms body
      */
     void sendSms(String to, String fromNumber, String messagingServiceSid, String body);
+
+    /**
+     * Backward-compatible helper when no Messaging Service SID is provided.
+     */
+    default void sendSms(String to, String fromNumber, String body) {
+        sendSms(to, fromNumber, null, body);
+    }
 }
