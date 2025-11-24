@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.portfolio.backend.entity.ContactMessage;
 
@@ -24,7 +25,6 @@ class SmsNotificationServiceTest {
                 true,
                 "+33123456789",
                 "+33987654321",
-                "",
                 twilioClient);
 
         ContactMessage msg = new ContactMessage();
@@ -49,7 +49,6 @@ class SmsNotificationServiceTest {
                 false,
                 "+33123456789",
                 "+33987654321",
-                "",
                 twilioClient);
 
         service.notifyNewContact(new ContactMessage());
@@ -62,7 +61,6 @@ class SmsNotificationServiceTest {
         TwilioClient twilioClient = Mockito.mock(TwilioClient.class);
         SmsNotificationService service = new SmsNotificationService(
                 true,
-                "",
                 "",
                 "",
                 twilioClient);
@@ -79,8 +77,8 @@ class SmsNotificationServiceTest {
                 true,
                 "+33123456789",
                 "",
-                "MGxxxx",
                 twilioClient);
+        ReflectionTestUtils.setField(service, "messagingServiceSid", "MGxxxx");
 
         ContactMessage msg = new ContactMessage();
         msg.setName("Jane");
