@@ -152,6 +152,18 @@ public class ProjectService {
         project.setRepoUrl(request.getRepoUrl());
         project.setLiveUrl(request.getLiveUrl());
         project.setTags(request.getTags());
+        project.setContent(request.getContent());
+        project.setStack(request.getStack());
+        project.setFeatures(request.getFeatures());
+        project.setContributions(request.getContributions());
+        project.setOutcomes(request.getOutcomes());
+        project.setClient(request.getClient());
+        project.setTestimonial(request.getTestimonial());
+        project.setTestimonialAuthor(request.getTestimonialAuthor());
+        project.setMood(request.getMood());
+        project.setPersonalNote(request.getPersonalNote());
+        project.setDuration(request.getDuration());
+        project.setRole(request.getRole());
     }
 
 }
