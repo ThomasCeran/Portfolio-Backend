@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/openapi.yaml", "/swagger/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/messages").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/public/cv").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
@@ -94,7 +95,7 @@ public class SecurityConfig {
     /**
      * Declares the AuthenticationManager bean for authentication needs.
      *
-     * @param authenticationConfiguration The Spring AuthenticationConfiguration.
+     * @param authenticationConfiguration The Spring AuthenticationConfiguration. Z
      * @return The AuthenticationManager instance.
      * @throws Exception In case of configuration errors.
      */
