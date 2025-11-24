@@ -44,12 +44,16 @@ public class TwilioClientImpl implements TwilioClient {
             LOGGER.warn("Missing recipient number; skipping SMS");
             return;
         }
+        if (!StringUtils.hasText(messagingServiceSid) && !StringUtils.hasText(fromNumber)) {
+            LOGGER.warn("Missing messagingServiceSid and fromNumber; skipping SMS");
+            return;
+        }
         try {
-            Message.creator(
-                    new PhoneNumber(to),
-                    StringUtils.hasText(messagingServiceSid) ? messagingServiceSid : new PhoneNumber(fromNumber),
-                    body
-            ).create();
+            if (StringUtils.hasText(messagingServiceSid)) {
+                Message.creator(new PhoneNumber(to), messagingServiceSid, body).create();
+            } else {
+                Message.creator(new PhoneNumber(to), new PhoneNumber(fromNumber), body).create();
+            }
         } catch (ApiException ex) {
             LOGGER.error("Failed to send SMS: {}", ex.getMessage());
         }
