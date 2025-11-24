@@ -23,16 +23,19 @@ public class SmsNotificationService implements NotificationService {
     private final boolean smsEnabled;
     private final String toPhoneNumber;
     private final String fromPhoneNumber;
+    private final String messagingServiceSid;
     private final TwilioClient twilioClient;
 
     public SmsNotificationService(
             @Value("${notification.sms.enabled:false}") boolean smsEnabled,
             @Value("${notification.sms.to-number:}") String toPhoneNumber,
             @Value("${notification.sms.from-number:}") String fromPhoneNumber,
+            @Value("${notification.sms.messaging-service-sid:}") String messagingServiceSid,
             TwilioClient twilioClient) {
         this.smsEnabled = smsEnabled;
         this.toPhoneNumber = toPhoneNumber;
         this.fromPhoneNumber = fromPhoneNumber;
+        this.messagingServiceSid = messagingServiceSid;
         this.twilioClient = twilioClient;
     }
 
@@ -42,14 +45,19 @@ public class SmsNotificationService implements NotificationService {
             return;
         }
 
-        if (!StringUtils.hasText(toPhoneNumber) || !StringUtils.hasText(fromPhoneNumber)) {
-            LOGGER.warn("SMS notifications enabled but phone numbers are missing");
+        if (!StringUtils.hasText(toPhoneNumber)) {
+            LOGGER.warn("SMS notifications enabled but recipient number is missing");
+            return;
+        }
+
+        if (!StringUtils.hasText(messagingServiceSid) && !StringUtils.hasText(fromPhoneNumber)) {
+            LOGGER.warn("SMS notifications enabled but neither messagingServiceSid nor from-number is set");
             return;
         }
 
         String smsBody = buildSmsBody(message);
 
-        twilioClient.sendSms(toPhoneNumber, fromPhoneNumber, smsBody);
+        twilioClient.sendSms(toPhoneNumber, fromPhoneNumber, messagingServiceSid, smsBody);
     }
 
     private String buildSmsBody(ContactMessage message) {

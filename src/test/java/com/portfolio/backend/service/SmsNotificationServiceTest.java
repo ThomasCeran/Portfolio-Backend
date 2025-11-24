@@ -24,6 +24,7 @@ class SmsNotificationServiceTest {
                 true,
                 "+33123456789",
                 "+33987654321",
+                "",
                 twilioClient);
 
         ContactMessage msg = new ContactMessage();
@@ -37,6 +38,7 @@ class SmsNotificationServiceTest {
         verify(twilioClient, times(1)).sendSms(
                 eq("+33123456789"),
                 eq("+33987654321"),
+                eq(""),
                 contains("Nouveau message de John"));
     }
 
@@ -47,11 +49,12 @@ class SmsNotificationServiceTest {
                 false,
                 "+33123456789",
                 "+33987654321",
+                "",
                 twilioClient);
 
         service.notifyNewContact(new ContactMessage());
 
-        verify(twilioClient, never()).sendSms(anyString(), anyString(), anyString());
+        verify(twilioClient, never()).sendSms(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -61,10 +64,36 @@ class SmsNotificationServiceTest {
                 true,
                 "",
                 "",
+                "",
                 twilioClient);
 
         service.notifyNewContact(new ContactMessage());
 
-        verify(twilioClient, never()).sendSms(anyString(), anyString(), anyString());
+        verify(twilioClient, never()).sendSms(anyString(), anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void notifyNewContact_usesMessagingServiceSidWhenProvided() {
+        TwilioClient twilioClient = Mockito.mock(TwilioClient.class);
+        SmsNotificationService service = new SmsNotificationService(
+                true,
+                "+33123456789",
+                "",
+                "MGxxxx",
+                twilioClient);
+
+        ContactMessage msg = new ContactMessage();
+        msg.setName("Jane");
+        msg.setEmail("jane@example.com");
+        msg.setSubject("Hello");
+        msg.setMessage("Test with MSID");
+
+        service.notifyNewContact(msg);
+
+        verify(twilioClient, times(1)).sendSms(
+                eq("+33123456789"),
+                eq(""),
+                eq("MGxxxx"),
+                contains("Jane"));
     }
 }

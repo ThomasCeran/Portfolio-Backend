@@ -35,13 +35,21 @@ public class TwilioClientImpl implements TwilioClient {
     }
 
     @Override
-    public void sendSms(String to, String from, String body) {
+    public void sendSms(String to, String fromNumber, String messagingServiceSid, String body) {
         if (!initialized) {
             LOGGER.warn("Twilio client not initialized; skipping SMS");
             return;
         }
+        if (!StringUtils.hasText(to)) {
+            LOGGER.warn("Missing recipient number; skipping SMS");
+            return;
+        }
         try {
-            Message.creator(new PhoneNumber(to), new PhoneNumber(from), body).create();
+            Message.creator(
+                    new PhoneNumber(to),
+                    StringUtils.hasText(messagingServiceSid) ? messagingServiceSid : new PhoneNumber(fromNumber),
+                    body
+            ).create();
         } catch (ApiException ex) {
             LOGGER.error("Failed to send SMS: {}", ex.getMessage());
         }
