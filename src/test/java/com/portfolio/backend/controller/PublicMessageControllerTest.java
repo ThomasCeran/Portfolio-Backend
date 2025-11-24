@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.backend.dto.ContactMessageRequest;
 import com.portfolio.backend.entity.ContactMessage;
 import com.portfolio.backend.service.ContactMessageService;
+import com.portfolio.backend.service.RecaptchaService;
 
 class PublicMessageControllerTest {
 
@@ -29,6 +30,9 @@ class PublicMessageControllerTest {
 
     @Mock
     private ContactMessageService contactMessageService;
+
+    @Mock
+    private RecaptchaService recaptchaService;
 
     @InjectMocks
     private PublicMessageController publicMessageController;
@@ -50,9 +54,11 @@ class PublicMessageControllerTest {
         request.setEmail("test@email.com");
         request.setSubject("Sujet de test");
         request.setMessage("Ceci est un message de test.");
+        request.setRecaptcha("token");
 
         Mockito.when(contactMessageService.saveMessage(any(ContactMessage.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        Mockito.when(recaptchaService.isTokenValid(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
 
         mockMvc.perform(post("/api/messages")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -67,6 +73,7 @@ class PublicMessageControllerTest {
         request.setEmail("");
         request.setSubject("");
         request.setMessage("");
+        request.setRecaptcha("");
 
         mockMvc.perform(post("/api/messages")
                 .contentType(MediaType.APPLICATION_JSON)
