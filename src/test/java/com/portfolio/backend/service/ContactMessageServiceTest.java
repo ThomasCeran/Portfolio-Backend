@@ -2,9 +2,9 @@ package com.portfolio.backend.service;
 
 import com.portfolio.backend.entity.ContactMessage;
 import com.portfolio.backend.repository.ContactMessageRepository;
+import com.portfolio.backend.service.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -25,12 +25,15 @@ class ContactMessageServiceTest {
     @Mock
     private ContactMessageRepository contactMessageRepository;
 
-    @InjectMocks
+    @Mock
+    private NotificationService notificationService;
+
     private ContactMessageService contactMessageService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        contactMessageService = new ContactMessageService(contactMessageRepository, List.of(notificationService));
     }
 
     @Test
@@ -112,6 +115,7 @@ class ContactMessageServiceTest {
 
         assertNotNull(result);
         verify(contactMessageRepository, times(1)).save(message);
+        verify(notificationService, times(1)).notifyNewContact(message);
     }
 
     @Test

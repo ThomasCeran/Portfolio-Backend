@@ -2,9 +2,12 @@ package com.portfolio.backend.service;
 
 import com.portfolio.backend.entity.ContactMessage;
 import com.portfolio.backend.repository.ContactMessageRepository;
+import com.portfolio.backend.service.NotificationService;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +22,15 @@ import java.util.UUID;
 @Service
 public class ContactMessageService {
 
-    private final ContactMessageRepository contactMessageRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContactMessageService.class);
 
-    public ContactMessageService(ContactMessageRepository contactMessageRepository) {
+    private final ContactMessageRepository contactMessageRepository;
+    private final List<NotificationService> notificationServices;
+
+    public ContactMessageService(ContactMessageRepository contactMessageRepository,
+            List<NotificationService> notificationServices) {
         this.contactMessageRepository = contactMessageRepository;
+        this.notificationServices = notificationServices != null ? notificationServices : List.of();
     }
 
     /**
@@ -92,7 +100,9 @@ public class ContactMessageService {
      */
     @Transactional
     public ContactMessage saveMessage(ContactMessage message) {
-        return contactMessageRepository.save(message);
+        ContactMessage saved = contactMessageRepository.save(message);
+        notifyChannels(saved);
+        return saved;
     }
 
     /**
@@ -110,6 +120,17 @@ public class ContactMessageService {
                 .orElseThrow(() -> new EntityNotFoundException("Message not found"));
         msg.setRead(true);
         contactMessageRepository.save(msg);
+    }
+
+    private void notifyChannels(ContactMessage message) {
+        for (NotificationService notifier : notificationServices) {
+            try {
+                notifier.notifyNewContact(message);
+            } catch (Exception ex) {
+                // Do not block the request flow if a notification channel fails.
+                LOGGER.warn("Contact notification failed: {}", ex.getMessage());
+            }
+        }
     }
 
 }
