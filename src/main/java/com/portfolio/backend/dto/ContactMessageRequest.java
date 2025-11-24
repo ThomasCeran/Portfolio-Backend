@@ -19,6 +19,9 @@ public class ContactMessageRequest {
     @Schema(description = "Email de contact", example = "thomas.ceran.dev@gmail.com")
     private String email;
 
+    @Schema(description = "Téléphone du visiteur", example = "+33612345678")
+    private String phone;
+
     @NotBlank(message = "Subject is required")
     @Schema(description = "Sujet du message", example = "Collaboration")
     private String subject;
@@ -26,6 +29,10 @@ public class ContactMessageRequest {
     @NotBlank(message = "Message is required")
     @Schema(description = "Contenu du message", example = "Salut, j'aimerais parler d'un projet freelance.")
     private String message;
+
+    @NotBlank(message = "Recaptcha token is required")
+    @Schema(description = "Token reCAPTCHA v3/v2 côté client", example = "03AFcWeA...")
+    private String recaptcha;
 
     // Getters and setters
     public String getName() {
@@ -44,6 +51,14 @@ public class ContactMessageRequest {
         this.email = email;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getSubject() {
         return subject;
     }
@@ -58,5 +73,13 @@ public class ContactMessageRequest {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getRecaptcha() {
+        return recaptcha;
+    }
+
+    public void setRecaptcha(String recaptcha) {
+        this.recaptcha = recaptcha;
     }
 }
