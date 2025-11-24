@@ -37,6 +37,11 @@ public class ContactMessage {
     private String email;
 
     /**
+     * Phone number of the sender (optional).
+     */
+    private String phone;
+
+    /**
      * Subject of the contact message.
      */
     @Column(nullable = false)
@@ -100,6 +105,14 @@ public class ContactMessage {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getSubject() {
