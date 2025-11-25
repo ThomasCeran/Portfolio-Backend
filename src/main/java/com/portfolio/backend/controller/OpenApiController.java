@@ -1,12 +1,12 @@
 package com.portfolio.backend.controller;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,11 +38,15 @@ public class OpenApiController {
 
     @GetMapping(value = "/v3/api-docs.yaml", produces = "application/yaml")
     public ResponseEntity<byte[]> yamlDocs() {
-        return ResponseEntity.ok().body(openApiYaml);
+        return ResponseEntity.ok()
+                .contentType(MediaType.asMediaType(MimeTypeUtils.parseMimeType("application/yaml")))
+                .body(openApiYaml);
     }
 
     @GetMapping(value = "/openapi.yaml", produces = "application/yaml")
     public ResponseEntity<byte[]> legacyYaml() {
-        return ResponseEntity.ok().body(openApiYaml);
+        return ResponseEntity.ok()
+                .contentType(MediaType.asMediaType(MimeTypeUtils.parseMimeType("application/yaml")))
+                .body(openApiYaml);
     }
 }
