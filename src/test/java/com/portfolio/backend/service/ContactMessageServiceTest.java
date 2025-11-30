@@ -1,12 +1,11 @@
 package com.portfolio.backend.service;
 
-import com.portfolio.backend.entity.ContactMessage;
-import com.portfolio.backend.repository.ContactMessageRepository;
-import com.portfolio.backend.service.NotificationService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -14,8 +13,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.portfolio.backend.entity.ContactMessage;
+import com.portfolio.backend.repository.ContactMessageRepository;
 
 /**
  * Unit tests for ContactMessageService class.

@@ -1,20 +1,19 @@
 package com.portfolio.backend.service;
 
-import com.portfolio.backend.entity.ContactMessage;
-import com.portfolio.backend.repository.ContactMessageRepository;
-import com.portfolio.backend.service.NotificationService;
-
-import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import com.portfolio.backend.entity.ContactMessage;
+import com.portfolio.backend.repository.ContactMessageRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 /**
  * Service class for managing ContactMessage operations.
