@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,14 +20,16 @@ import com.portfolio.backend.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Constructor for UserService.
      *
      * @param userRepository the UserRepository instance to interact with the database.
      */
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -136,7 +139,25 @@ public class UserService {
      */
     @Transactional
     public User saveUser(User user) {
+        user.setCreatedAt(user.getCreatedAt() == null ? LocalDateTime.now() : user.getCreatedAt());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        if (user.getEmail() != null && userRepository.existsByEmail(user.getEmail())
+                && (user.getId() == null || userRepository.findById(user.getId())
+                        .filter(existing -> !existing.getEmail().equals(user.getEmail()))
+                        .isPresent())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        if (user.getPassword() != null && !isEncoded(user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
         return userRepository.save(user);
+    }
+
+    private boolean isEncoded(String raw) {
+        return raw.startsWith("$2a$") || raw.startsWith("$2b$") || raw.startsWith("$2y$");
     }
 
     /**

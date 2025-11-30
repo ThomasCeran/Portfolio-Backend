@@ -2,6 +2,7 @@ package com.portfolio.backend.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,7 +18,7 @@ import com.portfolio.backend.entity.Role;
 import com.portfolio.backend.service.RoleService;
 
 @RestController
-@RequestMapping("/api/admin/roles")
+@RequestMapping(value = "/api/admin/roles", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ADMIN')")
 public class RoleController {
 

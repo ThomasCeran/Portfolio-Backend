@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.util.StringUtils;
 
 /**
  * WebConfig class
@@ -27,11 +28,12 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // Applies this config to all endpoints
-                .allowedOrigins(allowedOrigin) // Authorizes only this frontend origin (React)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Permits common HTTP methods
-                .allowedHeaders("*") // Accepts all request headers
-                .allowCredentials(true); // Allows sending credentials (cookies, auth headers) if needed
+        String[] origins = StringUtils.tokenizeToStringArray(allowedOrigin, ",");
+        registry.addMapping("/**")
+                .allowedOrigins(origins)
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
 
     }
 

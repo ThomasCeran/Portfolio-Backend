@@ -90,9 +90,6 @@ public class JwtFilter extends OncePerRequestFilter {
             // Load user details (including roles) from the database
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-            // === DEBUG: log authorities ===
-            logger.info("Authorities for {} : {}", username, userDetails.getAuthorities());
-
             // Validate the token against the username
             if (jwtUtil.validateToken(token, username)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
