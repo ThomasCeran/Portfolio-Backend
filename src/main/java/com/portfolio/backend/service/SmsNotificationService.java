@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.portfolio.backend.entity.ContactMessage;
-import com.portfolio.backend.service.TwilioClient;
 
 /**
  * Sends an SMS when a new contact message is received.
@@ -25,11 +24,6 @@ public class SmsNotificationService implements NotificationService {
     private final String fromPhoneNumber;
     private final String messagingServiceSid;
     private final TwilioClient twilioClient;
-
-    public SmsNotificationService(boolean smsEnabled, String toPhoneNumber, String fromPhoneNumber,
-            TwilioClient twilioClient) {
-        this(smsEnabled, toPhoneNumber, fromPhoneNumber, "", twilioClient);
-    }
 
     public SmsNotificationService(
             @Value("${notification.sms.enabled:false}") boolean smsEnabled,
