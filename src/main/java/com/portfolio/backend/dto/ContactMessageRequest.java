@@ -3,6 +3,7 @@ package com.portfolio.backend.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 /**
  * DTO used to receive contact form data from frontend.
@@ -20,6 +21,7 @@ public class ContactMessageRequest {
     private String email;
 
     @Schema(description = "Téléphone du visiteur", example = "+33612345678")
+    @Size(max = 50, message = "Phone must be at most 50 characters")
     private String phone;
 
     @NotBlank(message = "Subject is required")

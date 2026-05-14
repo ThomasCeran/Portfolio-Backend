@@ -35,11 +35,33 @@ class TelegramNotificationServiceImplTest {
                         org.hamcrest.Matchers.containsString("Name: Jane"),
                         org.hamcrest.Matchers.containsString("Email: jane@example.com"),
                         org.hamcrest.Matchers.containsString("Subject: Project"),
-                        org.hamcrest.Matchers.containsString("Message:\nHello from the contact form"))))
+                        org.hamcrest.Matchers.containsString("Message:\nHello from the contact form"),
+                        org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("Phone:")))))
                 .andExpect(jsonPath("$.parse_mode").doesNotExist())
                 .andRespond(withSuccess("{\"ok\":true}", MediaType.APPLICATION_JSON));
 
         service.notifyNewContact(contactMessage());
+
+        server.verify();
+    }
+
+    @Test
+    void notifyNewContact_includesPhoneWhenProvided() {
+        RestTemplate restTemplate = new RestTemplate();
+        MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
+        TelegramNotificationServiceImpl service = new TelegramNotificationServiceImpl(
+                true,
+                "bot-token",
+                "123456",
+                restTemplate);
+        ContactMessage message = contactMessage();
+        message.setPhone("+33123456789");
+
+        server.expect(once(), requestTo("https://api.telegram.org/botbot-token/sendMessage"))
+                .andExpect(jsonPath("$.text").value(org.hamcrest.Matchers.containsString("Phone: +33123456789")))
+                .andRespond(withSuccess("{\"ok\":true}", MediaType.APPLICATION_JSON));
+
+        service.notifyNewContact(message);
 
         server.verify();
     }

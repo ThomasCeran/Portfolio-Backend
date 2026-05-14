@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.util.StringUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -60,12 +61,16 @@ public class PublicMessageController {
         ContactMessage message = new ContactMessage();
         message.setName(request.getName());
         message.setEmail(request.getEmail());
-        message.setPhone(request.getPhone());
+        message.setPhone(normalizeOptional(request.getPhone()));
         message.setSubject(request.getSubject());
         message.setMessage(request.getMessage());
         message.setRead(false);
 
         contactMessageService.saveMessage(message);
         return ResponseEntity.accepted().build();
+    }
+
+    private String normalizeOptional(String value) {
+        return StringUtils.hasText(value) ? value.trim() : null;
     }
 }

@@ -26,6 +26,7 @@ class ContactMessageRepositoryTest {
         message1 = new ContactMessage();
         message1.setName("User 1");
         message1.setEmail("user1@example.com");
+        message1.setPhone("+33123456789");
         message1.setSubject("Inquiry about services");
         message1.setMessage("I would like to know more about your portfolio.");
         message1.setRead(false); // Par défaut, un message est non lu
@@ -46,6 +47,7 @@ class ContactMessageRepositoryTest {
         List<ContactMessage> messages = contactMessageRepository.findByEmail("user1@example.com");
         assertEquals(1, messages.size());
         assertEquals("Inquiry about services", messages.get(0).getSubject());
+        assertEquals("+33123456789", messages.get(0).getPhone());
     }
 
     @Test

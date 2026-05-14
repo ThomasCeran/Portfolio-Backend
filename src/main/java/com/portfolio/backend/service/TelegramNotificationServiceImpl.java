@@ -81,19 +81,21 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
     }
 
     private String buildNotificationText(ContactMessage message) {
-        return """
-                New portfolio contact message
+        StringBuilder text = new StringBuilder()
+                .append("New portfolio contact message\n\n")
+                .append("Name: ").append(valueOrPlaceholder(message.getName(), "Unknown")).append('\n')
+                .append("Email: ").append(valueOrPlaceholder(message.getEmail(), "No email")).append('\n');
+        appendOptionalLine(text, "Phone", message.getPhone());
+        text.append("Subject: ").append(valueOrPlaceholder(message.getSubject(), "No subject")).append('\n')
+                .append("Message:\n")
+                .append(valueOrPlaceholder(message.getMessage(), "No message"));
+        return text.toString();
+    }
 
-                Name: %s
-                Email: %s
-                Subject: %s
-                Message:
-                %s
-                """.formatted(
-                valueOrPlaceholder(message.getName(), "Unknown"),
-                valueOrPlaceholder(message.getEmail(), "No email"),
-                valueOrPlaceholder(message.getSubject(), "No subject"),
-                valueOrPlaceholder(message.getMessage(), "No message")).stripTrailing();
+    private void appendOptionalLine(StringBuilder text, String label, String value) {
+        if (StringUtils.hasText(value)) {
+            text.append(label).append(": ").append(value).append('\n');
+        }
     }
 
     private String valueOrPlaceholder(String value, String placeholder) {

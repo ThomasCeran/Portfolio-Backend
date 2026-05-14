@@ -21,6 +21,7 @@ Bienvenue dans mon projet de **portfolio full-stack**, développé avec **Spring
 
 Le endpoint public `POST /api/messages` attend le token reCAPTCHA v2 checkbox dans le champ JSON `recaptcha`.
 Le backend vérifie ce token côté serveur auprès de Google avant d'enregistrer le message.
+Le champ `phone` est optionnel et peut être omis ou envoyé à `null`; lorsqu'il est fourni, il est sauvegardé avec le message et exposé aux routes admin.
 
 En production, définir la clé secrète serveur avec l'une de ces configurations :
 

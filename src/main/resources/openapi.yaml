@@ -81,6 +81,11 @@ components:
         email:
           type: string
           format: email
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+          example: "+33 6 12 34 56 78"
         subject:
           type: string
         message:
@@ -197,6 +202,11 @@ paths:
                 email:
                   type: string
                   format: email
+                phone:
+                  type: string
+                  nullable: true
+                  maxLength: 50
+                  example: "+33 6 12 34 56 78"
                 subject:
                   type: string
                 message:

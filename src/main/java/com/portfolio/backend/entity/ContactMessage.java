@@ -39,6 +39,7 @@ public class ContactMessage {
     /**
      * Phone number of the sender (optional).
      */
+    @Column(length = 50)
     private String phone;
 
     /**

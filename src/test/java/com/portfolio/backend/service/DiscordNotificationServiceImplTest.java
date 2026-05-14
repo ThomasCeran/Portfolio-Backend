@@ -45,6 +45,25 @@ class DiscordNotificationServiceImplTest {
     }
 
     @Test
+    void notifyNewContact_omitsPhoneWhenMissing() {
+        RestTemplate restTemplate = new RestTemplate();
+        MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
+        DiscordNotificationServiceImpl service = new DiscordNotificationServiceImpl(
+                true,
+                WEBHOOK_URL,
+                restTemplate);
+
+        server.expect(once(), requestTo(WEBHOOK_URL))
+                .andExpect(jsonPath("$.content").value(org.hamcrest.Matchers.not(
+                        org.hamcrest.Matchers.containsString("Phone:"))))
+                .andRespond(withSuccess("", MediaType.APPLICATION_JSON));
+
+        service.notifyNewContact(contactMessageWithoutPhone());
+
+        server.verify();
+    }
+
+    @Test
     void notifyNewContact_skipsWhenDisabled() {
         RestTemplate restTemplate = new RestTemplate();
         MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
@@ -98,6 +117,12 @@ class DiscordNotificationServiceImplTest {
         msg.setPhone("+33123456789");
         msg.setSubject("Project");
         msg.setMessage("Hello from the contact form");
+        return msg;
+    }
+
+    private ContactMessage contactMessageWithoutPhone() {
+        ContactMessage msg = contactMessage();
+        msg.setPhone(null);
         return msg;
     }
 }

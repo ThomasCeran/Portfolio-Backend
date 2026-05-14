@@ -51,6 +51,7 @@ class ContactMessageControllerTest {
         ContactMessage message = new ContactMessage();
         UUID messageId = UUID.randomUUID();
         message.setId(messageId);
+        message.setPhone("+33123456789");
         when(contactMessageService.findMessageById(messageId)).thenReturn(Optional.of(message));
 
         ResponseEntity<ContactMessage> response = contactMessageController.getMessageById(messageId);
@@ -58,6 +59,7 @@ class ContactMessageControllerTest {
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(messageId, response.getBody().getId());
+        assertEquals("+33123456789", response.getBody().getPhone());
         verify(contactMessageService, times(1)).findMessageById(messageId);
     }
 

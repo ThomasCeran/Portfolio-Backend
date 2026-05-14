@@ -2,6 +2,8 @@ package com.portfolio.backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,6 +15,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -73,6 +76,53 @@ class PublicMessageControllerTest {
 
         verify(recaptchaService).isTokenValid(eq("token"), any());
         verify(contactMessageService).saveMessage(any(ContactMessage.class));
+    }
+
+    @Test
+    void receiveMessage_shouldSavePhone_whenProvided() throws Exception {
+        ContactMessageRequest request = new ContactMessageRequest();
+        request.setName("John");
+        request.setEmail("test@email.com");
+        request.setPhone(" +33 6 12 34 56 78 ");
+        request.setSubject("Sujet de test");
+        request.setMessage("Ceci est un message de test.");
+        request.setRecaptcha("token");
+
+        Mockito.when(contactMessageService.saveMessage(any(ContactMessage.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        Mockito.when(recaptchaService.isTokenValid(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+
+        mockMvc.perform(post("/api/messages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isAccepted());
+
+        ArgumentCaptor<ContactMessage> captor = ArgumentCaptor.forClass(ContactMessage.class);
+        verify(contactMessageService).saveMessage(captor.capture());
+        assertEquals("+33 6 12 34 56 78", captor.getValue().getPhone());
+    }
+
+    @Test
+    void receiveMessage_shouldSaveNullPhone_whenPhoneMissing() throws Exception {
+        ContactMessageRequest request = new ContactMessageRequest();
+        request.setName("John");
+        request.setEmail("test@email.com");
+        request.setSubject("Sujet de test");
+        request.setMessage("Ceci est un message de test.");
+        request.setRecaptcha("token");
+
+        Mockito.when(contactMessageService.saveMessage(any(ContactMessage.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        Mockito.when(recaptchaService.isTokenValid(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+
+        mockMvc.perform(post("/api/messages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isAccepted());
+
+        ArgumentCaptor<ContactMessage> captor = ArgumentCaptor.forClass(ContactMessage.class);
+        verify(contactMessageService).saveMessage(captor.capture());
+        assertNull(captor.getValue().getPhone());
     }
 
     @Test
