@@ -33,6 +33,9 @@ class ContactMessageServiceTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private NotificationService discordNotificationService;
+
     private ContactMessageService contactMessageService;
 
     @BeforeEach
@@ -134,6 +137,22 @@ class ContactMessageServiceTest {
         assertNotNull(result);
         verify(contactMessageRepository, times(1)).save(message);
         verify(notificationService, times(1)).notifyNewContact(message);
+    }
+
+    @Test
+    void testSaveMessageStillRunsOtherNotificationsWhenDiscordNotificationFails() {
+        contactMessageService = new ContactMessageService(contactMessageRepository,
+                List.of(notificationService, discordNotificationService));
+        ContactMessage message = new ContactMessage();
+        when(contactMessageRepository.save(message)).thenReturn(message);
+        doThrow(new RuntimeException("Discord unavailable")).when(discordNotificationService).notifyNewContact(message);
+
+        ContactMessage result = contactMessageService.saveMessage(message);
+
+        assertNotNull(result);
+        verify(contactMessageRepository, times(1)).save(message);
+        verify(notificationService, times(1)).notifyNewContact(message);
+        verify(discordNotificationService, times(1)).notifyNewContact(message);
     }
 
     @Test

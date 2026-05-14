@@ -67,3 +67,31 @@ Mise en place :
 
 Ne jamais mettre le token Telegram dans le frontend.
 
+## Configuration Discord
+
+Le backend peut aussi envoyer une notification Discord après l'enregistrement réussi d'un message de contact.
+Cette notification est optionnelle : si Discord est désactivé ou mal configuré, le message reste enregistré en base.
+
+Variables d'environnement côté backend :
+
+```properties
+DISCORD_NOTIFICATIONS_ENABLED=true
+DISCORD_WEBHOOK_URL=your-discord-webhook-url
+```
+
+Équivalents Spring possibles :
+
+```properties
+discord.notifications-enabled=true
+discord.webhook-url=your-discord-webhook-url
+```
+
+Mise en place :
+
+1. Créer un serveur Discord privé ou choisir un serveur privé existant.
+2. Créer un canal privé pour les notifications de contact.
+3. Créer un webhook entrant pour ce canal.
+4. Configurer `DISCORD_NOTIFICATIONS_ENABLED` et `DISCORD_WEBHOOK_URL` dans l'environnement backend.
+
+Ne jamais mettre l'URL du webhook Discord dans le frontend.
+
