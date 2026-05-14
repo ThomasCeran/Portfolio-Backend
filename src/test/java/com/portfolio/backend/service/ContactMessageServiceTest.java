@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -114,6 +115,19 @@ class ContactMessageServiceTest {
     void testSaveMessage() {
         ContactMessage message = new ContactMessage();
         when(contactMessageRepository.save(message)).thenReturn(message);
+
+        ContactMessage result = contactMessageService.saveMessage(message);
+
+        assertNotNull(result);
+        verify(contactMessageRepository, times(1)).save(message);
+        verify(notificationService, times(1)).notifyNewContact(message);
+    }
+
+    @Test
+    void testSaveMessageStillReturnsSavedMessageWhenNotificationFails() {
+        ContactMessage message = new ContactMessage();
+        when(contactMessageRepository.save(message)).thenReturn(message);
+        doThrow(new RuntimeException("Telegram unavailable")).when(notificationService).notifyNewContact(message);
 
         ContactMessage result = contactMessageService.saveMessage(message);
 
