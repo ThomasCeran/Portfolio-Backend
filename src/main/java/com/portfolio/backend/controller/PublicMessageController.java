@@ -2,6 +2,7 @@ package com.portfolio.backend.controller;
 
 import com.portfolio.backend.dto.ContactMessageRequest;
 import com.portfolio.backend.entity.ContactMessage;
+import com.portfolio.backend.exception.RecaptchaVerificationException;
 import com.portfolio.backend.service.ContactMessageService;
 import com.portfolio.backend.service.RecaptchaService;
 
@@ -53,7 +54,7 @@ public class PublicMessageController {
         }
 
         if (!recaptchaService.isTokenValid(request.getRecaptcha(), remoteIp)) {
-            return ResponseEntity.badRequest().build();
+            throw new RecaptchaVerificationException("reCAPTCHA verification failed");
         }
 
         ContactMessage message = new ContactMessage();

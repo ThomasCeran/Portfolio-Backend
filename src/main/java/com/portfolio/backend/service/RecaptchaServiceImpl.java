@@ -4,7 +4,9 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -18,10 +20,17 @@ public class RecaptchaServiceImpl implements RecaptchaService {
     private static final String VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify";
 
     private final String secret;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
-    public RecaptchaServiceImpl(@Value("${recaptcha.secret:}") String secret) {
+    @Autowired
+    public RecaptchaServiceImpl(@Value("${recaptcha.secret:${GOOGLE_RECAPTCHA_SECRET:}}") String secret,
+            RestTemplateBuilder restTemplateBuilder) {
+        this(secret, restTemplateBuilder.build());
+    }
+
+    RecaptchaServiceImpl(String secret, RestTemplate restTemplate) {
         this.secret = secret;
+        this.restTemplate = restTemplate;
     }
 
     @Override

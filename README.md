@@ -17,3 +17,22 @@ Bienvenue dans mon projet de **portfolio full-stack**, développé avec **Spring
 - Documentation API avec **Swagger (SpringDoc OpenAPI)**
 - Déploiement prévu avec **Docker & CI/CD**
 
+## Configuration reCAPTCHA
+
+Le endpoint public `POST /api/messages` attend le token reCAPTCHA v2 checkbox dans le champ JSON `recaptcha`.
+Le backend vérifie ce token côté serveur auprès de Google avant d'enregistrer le message.
+
+En production, définir la clé secrète serveur avec l'une de ces configurations :
+
+```properties
+GOOGLE_RECAPTCHA_SECRET=your-google-recaptcha-secret
+```
+
+ou :
+
+```properties
+recaptcha.secret=your-google-recaptcha-secret
+```
+
+Ne jamais exposer cette clé au frontend.
+

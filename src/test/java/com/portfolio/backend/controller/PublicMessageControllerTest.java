@@ -1,8 +1,12 @@
 package com.portfolio.backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -21,6 +25,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.backend.dto.ContactMessageRequest;
 import com.portfolio.backend.entity.ContactMessage;
+import com.portfolio.backend.exception.GlobalExceptionHandler;
 import com.portfolio.backend.service.ContactMessageService;
 import com.portfolio.backend.service.RecaptchaService;
 
@@ -43,6 +48,7 @@ class PublicMessageControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(publicMessageController)
+                .setControllerAdvice(new GlobalExceptionHandler())
                 .setValidator(new LocalValidatorFactoryBean())
                 .build();
     }
@@ -64,6 +70,29 @@ class PublicMessageControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isAccepted());
+
+        verify(recaptchaService).isTokenValid(eq("token"), any());
+        verify(contactMessageService).saveMessage(any(ContactMessage.class));
+    }
+
+    @Test
+    void receiveMessage_shouldReturnBadRequestAndNotSave_whenRecaptchaInvalid() throws Exception {
+        ContactMessageRequest request = new ContactMessageRequest();
+        request.setName("John");
+        request.setEmail("test@email.com");
+        request.setSubject("Sujet de test");
+        request.setMessage("Ceci est un message de test.");
+        request.setRecaptcha("bad-token");
+
+        Mockito.when(recaptchaService.isTokenValid(Mockito.anyString(), Mockito.any())).thenReturn(false);
+
+        mockMvc.perform(post("/api/messages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.recaptcha").value("reCAPTCHA verification failed"));
+
+        verify(contactMessageService, never()).saveMessage(any(ContactMessage.class));
     }
 
     @Test
