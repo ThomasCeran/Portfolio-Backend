@@ -96,3 +96,26 @@ Mise en place :
 
 Ne jamais mettre l'URL du webhook Discord dans le frontend.
 
+## Configuration Email
+
+Le backend peut envoyer une notification email en texte brut après l'enregistrement réussi d'un message de contact.
+Cette notification est optionnelle : si l'email est désactivé ou mal configuré, le message reste enregistré en base.
+
+Variables d'environnement côté backend :
+
+```properties
+EMAIL_NOTIFICATIONS_ENABLED=true
+MAIL_HOST=smtp.example.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@example.com
+MAIL_PASSWORD=your-smtp-password
+MAIL_FROM=your-email@example.com
+MAIL_TO=your-email@example.com
+```
+
+Les propriétés Spring Boot `spring.mail.host`, `spring.mail.port`, `spring.mail.username` et `spring.mail.password`
+sont également supportées.
+
+Les identifiants SMTP doivent être stockés uniquement dans les variables d'environnement backend.
+Ne jamais mettre les identifiants mail dans le frontend et ne jamais committer de vrais secrets.
+

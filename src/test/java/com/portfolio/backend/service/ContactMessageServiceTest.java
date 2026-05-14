@@ -36,6 +36,9 @@ class ContactMessageServiceTest {
     @Mock
     private NotificationService discordNotificationService;
 
+    @Mock
+    private NotificationService emailNotificationService;
+
     private ContactMessageService contactMessageService;
 
     @BeforeEach
@@ -153,6 +156,23 @@ class ContactMessageServiceTest {
         verify(contactMessageRepository, times(1)).save(message);
         verify(notificationService, times(1)).notifyNewContact(message);
         verify(discordNotificationService, times(1)).notifyNewContact(message);
+    }
+
+    @Test
+    void testSaveMessageStillRunsOtherNotificationsWhenEmailNotificationFails() {
+        contactMessageService = new ContactMessageService(contactMessageRepository,
+                List.of(notificationService, discordNotificationService, emailNotificationService));
+        ContactMessage message = new ContactMessage();
+        when(contactMessageRepository.save(message)).thenReturn(message);
+        doThrow(new RuntimeException("SMTP unavailable")).when(emailNotificationService).notifyNewContact(message);
+
+        ContactMessage result = contactMessageService.saveMessage(message);
+
+        assertNotNull(result);
+        verify(contactMessageRepository, times(1)).save(message);
+        verify(notificationService, times(1)).notifyNewContact(message);
+        verify(discordNotificationService, times(1)).notifyNewContact(message);
+        verify(emailNotificationService, times(1)).notifyNewContact(message);
     }
 
     @Test
